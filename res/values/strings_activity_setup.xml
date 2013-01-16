@@ -15,5 +15,6 @@
     <string name="prompt_mobile">Mobile Number</string>
     <string name="welcome_setup">Welcome</string>
     <string name="error_invalid_mobile">This number is invalid</string>
+    <string name="title_activity_setup">Setup</string>
 
 </resources>

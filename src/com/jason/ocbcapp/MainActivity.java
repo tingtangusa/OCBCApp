@@ -1,14 +1,24 @@
 package com.jason.ocbcapp;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
+import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -18,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
@@ -40,6 +52,20 @@ ActionBar.TabListener {
 
     public static final String PREFS_NAME = "OCBCPrefsFile";
 
+    MainActivity mMainActivity = this;
+
+    private String[] mStrings = { "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
+            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
+            "Allgauer Emmentaler", "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
+            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
+            "Allgauer Emmentaler" };
+
+    private LinkedList<String> mListItems;
+    private ArrayAdapter<String> mAdapter;
+
+    private PullToRefreshListFragment mPullRefreshListFragment;
+    private PullToRefreshListView mPullRefreshListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +73,8 @@ ActionBar.TabListener {
 
         // Restore preferences
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        // start SetupActivity if user has not setup the app
         boolean hasSetup = settings.getBoolean("hasSetup", false);
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
         startSetup(hasSetup);
@@ -126,6 +154,7 @@ ActionBar.TabListener {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -135,11 +164,36 @@ ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a DummySectionFragment (defined as a static inner class
             // below) with the page number as its lone argument.
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
-            return fragment;
+            if (position == 0) {
+                mPullRefreshListFragment = new PullToRefreshListFragment();
+                mPullRefreshListView = mPullRefreshListFragment.getPullToRefreshListView();
+
+                mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+                    @Override
+                    public void onRefresh(
+                            PullToRefreshBase<ListView> refreshView) {
+                        new GetLeastWaitingTimeTask().execute();
+                    }
+                });
+
+                ListView actualListView = mPullRefreshListView.getRefreshableView();
+
+                mListItems = new LinkedList<String>();
+                mListItems.addAll(Arrays.asList(mStrings));
+                mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
+
+                actualListView.setAdapter(mAdapter);
+
+                mPullRefreshListFragment.setListShown(true);
+                return mPullRefreshListFragment;
+            }
+            else {
+                Fragment fragment = new DummySectionFragment();
+                Bundle args = new Bundle();
+                args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+                fragment.setArguments(args);
+                return fragment;
+            }
         }
 
         @Override
@@ -152,7 +206,7 @@ ActionBar.TabListener {
         public CharSequence getPageTitle(int position) {
             switch (position) {
             case 0:
-                return getString(R.string.title_section1).toUpperCase();
+                return getString(R.string.title_section_least_wait).toUpperCase();
             case 1:
                 return getString(R.string.title_section2).toUpperCase();
             case 2:
@@ -189,4 +243,27 @@ ActionBar.TabListener {
         }
     }
 
+    private class GetLeastWaitingTimeTask extends AsyncTask<Void, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(Void... arg0) {
+            // TODO Auto-generated method stub
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+            }
+            return mStrings;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            mListItems.addFirst("Added after refresh...");
+            mAdapter.notifyDataSetChanged();
+
+            // Call onRefreshComplete when the list has been refreshed.
+            mPullRefreshListView.onRefreshComplete();
+
+            super.onPostExecute(result);
+        }
+    }
 }
