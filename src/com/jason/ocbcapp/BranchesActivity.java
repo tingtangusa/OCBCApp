@@ -32,7 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements
+public class BranchesActivity extends FragmentActivity implements
 ActionBar.TabListener {
 
     /**
@@ -52,7 +52,7 @@ ActionBar.TabListener {
 
     public static final String PREFS_NAME = "OCBCPrefsFile";
 
-    MainActivity mMainActivity = this;
+    BranchesActivity mMainActivity = this;
 
     private LinkedList<String> mListItems;
     private ArrayAdapter<String> mAdapter;
