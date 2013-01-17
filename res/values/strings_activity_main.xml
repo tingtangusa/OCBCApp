@@ -5,4 +5,61 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
+    <string-array name="branches">
+        <item>Alexandra Village</item>
+        <item>Aljunied</item>
+        <item>Ang Mo Kio</item>
+        <item>Ang Mo Kio Central</item>
+        <item>Balestier Road</item>
+        <item>Bedok</item>
+        <item>Bedok North</item>
+        <item>Bishan</item>
+        <item>Bukit Batok</item>
+        <item>Bukit Panjang</item>
+        <item>Bukit Timah</item>
+        <item>Causeway Point</item>
+        <item>Choa Chu Kang</item>
+        <item>Compass Point</item>
+        <item>City Square Mall</item>
+        <item>Clementi</item>
+        <item>East Coast</item>
+        <item>Geylang</item>
+        <item>HarbourFront</item>
+        <item>Holland Village</item>
+        <item>Hougang</item>
+        <item>Hougang Mall</item>
+        <item>ION Orchard</item>
+        <item>Jalan Besar</item>
+        <item>Jalan Sultan</item>
+        <item>Jurong</item>
+        <item>Jurong East</item>
+        <item>Jurong Point</item>
+        <item>Jurong West</item>
+        <item>Katong</item>
+        <item>Marina Bay Financial Centre</item>
+        <item>Marina Bay Sands</item>
+        <item>nex</item>
+        <item>North</item>
+        <item>Northpoint</item>
+        <item>NTU (FRANK Store)</item>
+        <item>OCBC Centre</item>
+        <item>Orchard Rd</item>
+        <item>People\'s Park</item>
+        <item>Punggol Plaza</item>
+        <item>Robinson Road</item>
+        <item>Serangoon Gardens</item>
+        <item>Sixth Avenue</item>
+        <item>Singapore Polytechnic (FRANK Store)</item>
+        <item>SMU (FRANK Store)</item>
+        <item>Sun Plaza</item>
+        <item>Suntec City</item>
+        <item>Tampines</item>
+        <item>Thomson</item>
+        <item>Toa Payoh Central</item>
+        <item>Ubi</item>
+        <item>VivoCity (FRANK Store)</item>
+        <item>White Sands</item>
+        <item>Woodlands</item>
+        <item>Yishun</item>
+    </string-array>
 </resources>
