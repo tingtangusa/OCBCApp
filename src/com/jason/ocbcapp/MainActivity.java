@@ -113,6 +113,28 @@ ActionBar.TabListener {
                     .setText(mSectionsPagerAdapter.getPageTitle(i))
                     .setTabListener(this));
         }
+//
+//        mPullRefreshListFragment = (PullToRefreshListFragment) Fragment.instantiate(this, PullToRefreshListFragment.class.getName());
+//
+//        mPullRefreshListView = mPullRefreshListFragment.getPullToRefreshListView();
+//
+//        mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+//            @Override
+//            public void onRefresh(
+//                    PullToRefreshBase<ListView> refreshView) {
+//                new GetLeastWaitingTimeTask().execute();
+//            }
+//        });
+//
+//        ListView actualListView = mPullRefreshListView.getRefreshableView();
+//
+        mListItems = new LinkedList<String>();
+        mListItems.addAll(Arrays.asList(mStrings));
+        mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
+//
+//        actualListView.setAdapter(mAdapter);
+//
+//        mPullRefreshListFragment.setListShown(true);
     }
 
     private void startSetup(boolean hasSetup) {
@@ -164,36 +186,17 @@ ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a DummySectionFragment (defined as a static inner class
             // below) with the page number as its lone argument.
-            if (position == 0) {
-                mPullRefreshListFragment = new PullToRefreshListFragment();
-                mPullRefreshListView = mPullRefreshListFragment.getPullToRefreshListView();
-
-                mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-                    @Override
-                    public void onRefresh(
-                            PullToRefreshBase<ListView> refreshView) {
-                        new GetLeastWaitingTimeTask().execute();
-                    }
-                });
-
-                ListView actualListView = mPullRefreshListView.getRefreshableView();
-
-                mListItems = new LinkedList<String>();
-                mListItems.addAll(Arrays.asList(mStrings));
-                mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
-
-                actualListView.setAdapter(mAdapter);
-
-                mPullRefreshListFragment.setListShown(true);
-                return mPullRefreshListFragment;
+            switch (position) {
+            case 0:
+                return new LeastWaitingTimeListFragment();
+            case 1:
+                return new NearestBranchesListFragment();
             }
-            else {
-                Fragment fragment = new DummySectionFragment();
-                Bundle args = new Bundle();
-                args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-                fragment.setArguments(args);
-                return fragment;
-            }
+            Fragment fragment = new DummySectionFragment();
+            Bundle args = new Bundle();
+            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+            fragment.setArguments(args);
+            return fragment;
         }
 
         @Override
@@ -240,6 +243,60 @@ ActionBar.TabListener {
             textView.setText(Integer.toString(getArguments().getInt(
                     ARG_SECTION_NUMBER)));
             return textView;
+        }
+    }
+    
+    public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
+
+        public LeastWaitingTimeListFragment(){
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            mPullRefreshListView = this.getPullToRefreshListView();
+            mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+                @Override
+                public void onRefresh(
+                        PullToRefreshBase<ListView> refreshView) {
+                    GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
+                    task.execute();
+                }
+            });
+            
+            this.getListView().setTextFilterEnabled(true);
+
+            this.setListAdapter(mAdapter);
+            this.setEmptyText(getString(R.string.hello_world));
+
+        }
+    }
+
+    public class NearestBranchesListFragment extends PullToRefreshListFragment {
+
+        public NearestBranchesListFragment(){
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            mPullRefreshListView = this.getPullToRefreshListView();
+            mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+                @Override
+                public void onRefresh(
+                        PullToRefreshBase<ListView> refreshView) {
+                    GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
+                    task.execute();
+                }
+            });
+            
+            this.getListView().setTextFilterEnabled(true);
+
+            this.setListAdapter(mAdapter);
+            this.setEmptyText(getString(R.string.hello_world));
+
         }
     }
 
