@@ -54,16 +54,9 @@ ActionBar.TabListener {
 
     MainActivity mMainActivity = this;
 
-    private String[] mStrings = { "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
-            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler", "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi",
-            "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler" };
-
     private LinkedList<String> mListItems;
     private ArrayAdapter<String> mAdapter;
 
-    private PullToRefreshListFragment mPullRefreshListFragment;
     private PullToRefreshListView mPullRefreshListView;
 
     @Override
@@ -113,28 +106,10 @@ ActionBar.TabListener {
                     .setText(mSectionsPagerAdapter.getPageTitle(i))
                     .setTabListener(this));
         }
-//
-//        mPullRefreshListFragment = (PullToRefreshListFragment) Fragment.instantiate(this, PullToRefreshListFragment.class.getName());
-//
-//        mPullRefreshListView = mPullRefreshListFragment.getPullToRefreshListView();
-//
-//        mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-//            @Override
-//            public void onRefresh(
-//                    PullToRefreshBase<ListView> refreshView) {
-//                new GetLeastWaitingTimeTask().execute();
-//            }
-//        });
-//
-//        ListView actualListView = mPullRefreshListView.getRefreshableView();
-//
+
         mListItems = new LinkedList<String>();
-        mListItems.addAll(Arrays.asList(mStrings));
+        mListItems.addAll(Arrays.asList(getResources().getStringArray(R.array.branches)));
         mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
-//
-//        actualListView.setAdapter(mAdapter);
-//
-//        mPullRefreshListFragment.setListShown(true);
     }
 
     private void startSetup(boolean hasSetup) {
@@ -307,7 +282,7 @@ ActionBar.TabListener {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
-            return mStrings;
+            return getResources().getStringArray(R.array.branches);
         }
 
         @Override
