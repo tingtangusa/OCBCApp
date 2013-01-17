@@ -19,7 +19,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.jason.ocbcapp.MainActivity"
+            android:name="com.jason.ocbcapp.BranchesActivity"
             android:label="0cbc" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
