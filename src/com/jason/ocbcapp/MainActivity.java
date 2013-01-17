@@ -201,8 +201,8 @@ ActionBar.TabListener {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 2 total pages.
+            return 2;
         }
 
         @Override
@@ -211,9 +211,7 @@ ActionBar.TabListener {
             case 0:
                 return getString(R.string.title_section_least_wait).toUpperCase();
             case 1:
-                return getString(R.string.title_section2).toUpperCase();
-            case 2:
-                return getString(R.string.title_section3).toUpperCase();
+                return getString(R.string.title_section_nearest_branches).toUpperCase();
             }
             return null;
         }
@@ -306,7 +304,7 @@ ActionBar.TabListener {
         protected String[] doInBackground(Void... arg0) {
             // TODO Auto-generated method stub
             try {
-                Thread.sleep(4000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
             }
             return mStrings;
