@@ -69,7 +69,7 @@ public class SetupActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        SharedPreferences settings = getSharedPreferences(BranchesActivity.PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("hasSetup", true);
         editor.commit();

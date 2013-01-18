@@ -50,7 +50,6 @@ ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
-    public static final String PREFS_NAME = "OCBCPrefsFile";
 
     BranchesActivity mMainActivity = this;
 
@@ -63,15 +62,7 @@ ActionBar.TabListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_branches);
-
-        // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-
-        // start SetupActivity if user has not setup the app
-        boolean hasSetup = settings.getBoolean("hasSetup", false);
-        Log.i("OCBCApp", "hasSetup = " + hasSetup);
-        startSetup(hasSetup);
-
+        
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -110,14 +101,6 @@ ActionBar.TabListener {
         mListItems = new LinkedList<String>();
         mListItems.addAll(Arrays.asList(getResources().getStringArray(R.array.branches)));
         mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
-    }
-
-    private void startSetup(boolean hasSetup) {
-        if (!hasSetup) {
-            Log.i("OCBCApp", "Starting setup");
-            Intent intent = new Intent(this, SetupActivity.class);
-            startActivity(intent);
-        }
     }
 
     @Override

@@ -20,7 +20,11 @@
         </activity>
         <activity
             android:name="com.jason.ocbcapp.BranchesActivity"
-            android:label="0cbc" >
+            android:label="@string/title_activity_branches" >
+        </activity>
+        <activity
+            android:name="com.jason.ocbcapp.MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
