@@ -32,7 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class BranchesActivity extends FragmentActivity implements
+public class MainActivity extends FragmentActivity implements
 ActionBar.TabListener {
 
     /**
@@ -50,8 +50,10 @@ ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
+    //Name of the preference SharedPreferences that we are using for the app
+    public static final String PREFS_NAME = "OCBCPrefsFile";
 
-    BranchesActivity mMainActivity = this;
+    MainActivity mMainActivity = this;
 
     private LinkedList<String> mListItems;
     private ArrayAdapter<String> mAdapter;
@@ -61,8 +63,16 @@ ActionBar.TabListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_branches);
-        
+        setContentView(R.layout.activity_main);
+
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        // start SetupActivity if user has not setup the app
+        boolean hasSetup = settings.getBoolean("hasSetup", false);
+        Log.i("OCBCApp", "hasSetup = " + hasSetup);
+        startSetup(hasSetup);
+
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -101,6 +111,14 @@ ActionBar.TabListener {
         mListItems = new LinkedList<String>();
         mListItems.addAll(Arrays.asList(getResources().getStringArray(R.array.branches)));
         mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
+    }
+    
+    private void startSetup(boolean hasSetup) {
+        if (!hasSetup) {
+            Log.i("OCBCApp", "Starting setup");
+            Intent intent = new Intent(this, SetupActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -147,8 +165,8 @@ ActionBar.TabListener {
             switch (position) {
             case 0:
                 return new LeastWaitingTimeListFragment();
-            case 1:
-                return new NearestBranchesListFragment();
+            case 2:
+                return new AppointmentsMenuFragment();
             }
             Fragment fragment = new DummySectionFragment();
             Bundle args = new Bundle();
@@ -160,16 +178,18 @@ ActionBar.TabListener {
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
             case 0:
-                return getString(R.string.title_section_least_wait).toUpperCase();
+                return getString(R.string.title_section_branches).toUpperCase();
             case 1:
-                return getString(R.string.title_section_nearest_branches).toUpperCase();
+                return getString(R.string.title_section_notifs).toUpperCase();
+            case 2:
+                return getString(R.string.title_section_appts).toUpperCase();
             }
             return null;
         }
@@ -201,7 +221,7 @@ ActionBar.TabListener {
             return textView;
         }
     }
-    
+
     public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
 
         public LeastWaitingTimeListFragment(){
@@ -226,6 +246,24 @@ ActionBar.TabListener {
             this.setListAdapter(mAdapter);
             this.setEmptyText(getString(R.string.hello_world));
 
+        }
+    }
+
+    public class AppointmentsMenuFragment extends Fragment {
+        
+        public AppointmentsMenuFragment() {
+            
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            // Create a new TextView and set its text to the fragment's section
+            // number argument value.
+            TextView textView = new TextView(getActivity());
+            textView.setGravity(Gravity.CENTER);
+            textView.setText(getString(R.string.hello_world));
+            return textView;
         }
     }
 
