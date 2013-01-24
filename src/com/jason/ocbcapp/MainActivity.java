@@ -3,11 +3,6 @@ package com.jason.ocbcapp;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -18,22 +13,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 public class MainActivity extends FragmentActivity implements
-ActionBar.TabListener {
+        ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -50,7 +47,7 @@ ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
-    //Name of the preference SharedPreferences that we are using for the app
+    // Name of the preference SharedPreferences that we are using for the app
     public static final String PREFS_NAME = "OCBCPrefsFile";
 
     MainActivity mMainActivity = this;
@@ -90,12 +87,12 @@ ActionBar.TabListener {
         // tab. We can also use ActionBar.Tab#select() to do this if we have
         // a reference to the Tab.
         mViewPager
-        .setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
+                .setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        actionBar.setSelectedNavigationItem(position);
+                    }
+                });
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
@@ -109,10 +106,12 @@ ActionBar.TabListener {
         }
 
         mListItems = new LinkedList<String>();
-        mListItems.addAll(Arrays.asList(getResources().getStringArray(R.array.branches)));
-        mAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_list_item_1, mListItems);
+        mListItems.addAll(Arrays.asList(getResources().getStringArray(
+                R.array.branches)));
+        mAdapter = new ArrayAdapter<String>(mMainActivity,
+                android.R.layout.simple_list_item_1, mListItems);
     }
-    
+
     private void startSetup(boolean hasSetup) {
         if (!hasSetup) {
             Log.i("OCBCApp", "Starting setup");
@@ -152,7 +151,6 @@ ActionBar.TabListener {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -166,7 +164,7 @@ ActionBar.TabListener {
             case 0:
                 return new LeastWaitingTimeListFragment();
             case 2:
-                return new AppointmentsMenuFragment();
+                return new AppointmentsFragment();
             }
             Fragment fragment = new DummySectionFragment();
             Bundle args = new Bundle();
@@ -224,7 +222,7 @@ ActionBar.TabListener {
 
     public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
 
-        public LeastWaitingTimeListFragment(){
+        public LeastWaitingTimeListFragment() {
         }
 
         @Override
@@ -232,15 +230,16 @@ ActionBar.TabListener {
             super.onActivityCreated(savedInstanceState);
 
             mPullRefreshListView = this.getPullToRefreshListView();
-            mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-                @Override
-                public void onRefresh(
-                        PullToRefreshBase<ListView> refreshView) {
-                    GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
-                    task.execute();
-                }
-            });
-            
+            mPullRefreshListView
+                    .setOnRefreshListener(new OnRefreshListener<ListView>() {
+                        @Override
+                        public void onRefresh(
+                                PullToRefreshBase<ListView> refreshView) {
+                            GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
+                            task.execute();
+                        }
+                    });
+
             this.getListView().setTextFilterEnabled(true);
 
             this.setListAdapter(mAdapter);
@@ -249,27 +248,11 @@ ActionBar.TabListener {
         }
     }
 
-    public class AppointmentsMenuFragment extends Fragment {
-        
-        public AppointmentsMenuFragment() {
-            
-        }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            // Create a new TextView and set its text to the fragment's section
-            // number argument value.
-            TextView textView = new TextView(getActivity());
-            textView.setGravity(Gravity.CENTER);
-            textView.setText(getString(R.string.hello_world));
-            return textView;
-        }
-    }
 
     public class NearestBranchesListFragment extends PullToRefreshListFragment {
 
-        public NearestBranchesListFragment(){
+        public NearestBranchesListFragment() {
         }
 
         @Override
@@ -277,15 +260,16 @@ ActionBar.TabListener {
             super.onActivityCreated(savedInstanceState);
 
             mPullRefreshListView = this.getPullToRefreshListView();
-            mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-                @Override
-                public void onRefresh(
-                        PullToRefreshBase<ListView> refreshView) {
-                    GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
-                    task.execute();
-                }
-            });
-            
+            mPullRefreshListView
+                    .setOnRefreshListener(new OnRefreshListener<ListView>() {
+                        @Override
+                        public void onRefresh(
+                                PullToRefreshBase<ListView> refreshView) {
+                            GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
+                            task.execute();
+                        }
+                    });
+
             this.getListView().setTextFilterEnabled(true);
 
             this.setListAdapter(mAdapter);
@@ -294,7 +278,8 @@ ActionBar.TabListener {
         }
     }
 
-    private class GetLeastWaitingTimeTask extends AsyncTask<Void, Void, String[]> {
+    private class GetLeastWaitingTimeTask extends
+            AsyncTask<Void, Void, String[]> {
 
         @Override
         protected String[] doInBackground(Void... arg0) {
