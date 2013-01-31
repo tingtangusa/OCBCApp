@@ -1,16 +1,15 @@
 package com.jason.ocbcapp;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -24,16 +23,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class MainActivity extends FragmentActivity implements
-        ActionBar.TabListener {
+public class MainActivity extends SherlockFragmentActivity implements
+        ActionBar.TabListener, TabHost.OnTabChangeListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -49,6 +54,10 @@ public class MainActivity extends FragmentActivity implements
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    TabHost mTabHost;
+
+    private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
 
     // Name of the preference SharedPreferences that we are using for the app
     public static final String PREFS_NAME = "OCBCPrefsFile";
@@ -73,17 +82,50 @@ public class MainActivity extends FragmentActivity implements
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
         startSetup(hasSetup);
 
-        // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        initializeTabHost(savedInstanceState);
 
+        initializeViewPager();
+
+        mListItems = new LinkedList<String>();
+        mListItems.addAll(Arrays.asList(getResources().getStringArray(
+                R.array.branches)));
+        mAdapter = new ArrayAdapter<String>(mMainActivity,
+                android.R.layout.simple_list_item_1, mListItems);
+
+        initializeActionBar();
+    }
+
+    private void initializeActionBar() {
+        /** Enabling dropdown list navigation for the action bar */
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        /** Defining Navigation listener */
+        OnNavigationListener navigationListener = new OnNavigationListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(int itemPosition,
+                    long itemId) {
+                Toast.makeText(getBaseContext(),
+                        "You selected : " + mListItems.get(itemPosition),
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        };
+
+        /**
+         * Setting dropdown items and item navigation listener for the actionbar
+         */
+        getSupportActionBar().setListNavigationCallbacks(mAdapter, navigationListener);
+    }
+
+    private void initializeViewPager() {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(
                 getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding
@@ -93,47 +135,9 @@ public class MainActivity extends FragmentActivity implements
                 .setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                        actionBar.setSelectedNavigationItem(position);
+                        mTabHost.setCurrentTab(position);
                     }
                 });
-
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(actionBar.newTab()
-                    .setText(mSectionsPagerAdapter.getPageTitle(i))
-                    .setTabListener(this));
-        }
-
-        mListItems = new LinkedList<String>();
-        mListItems.addAll(Arrays.asList(getResources().getStringArray(
-                R.array.branches)));
-        mAdapter = new ArrayAdapter<String>(mMainActivity,
-                android.R.layout.simple_list_item_1, mListItems);
-
-        // /** Enabling dropdown list navigation for the action bar */
-        // getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        //
-        // /** Defining Navigation listener */
-        // OnNavigationListener navigationListener = new OnNavigationListener()
-        // {
-        //
-        // @Override
-        // public boolean onNavigationItemSelected(int itemPosition, long
-        // itemId) {
-        // Toast.makeText(getBaseContext(), "You selected : " +
-        // mListItems.get(itemPosition) , Toast.LENGTH_SHORT).show();
-        // return false;
-        // }
-        // };
-        //
-        // /** Setting dropdown items and item navigation listener for the
-        // actionbar */
-        // getActionBar().setListNavigationCallbacks(mAdapter,
-        // navigationListener);
     }
 
     private void startSetup(boolean hasSetup) {
@@ -144,16 +148,53 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
+    /**
+     * Initialise the Tab Host
+     */
+    private void initializeTabHost(Bundle args) {
+        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup();
+        TabInfo tabInfo = null;
+        MainActivity.AddTab(this, this.mTabHost,
+                this.mTabHost.newTabSpec("Tab1").setIndicator("Tab 1"),
+                (tabInfo = new TabInfo("Tab1",
+                        NearestBranchesListFragment.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        MainActivity
+                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec("Tab2")
+                        .setIndicator("Tab 2"), (tabInfo = new TabInfo("Tab2",
+                        DummySectionFragment.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        MainActivity
+                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec("Tab3")
+                        .setIndicator("Tab 3"), (tabInfo = new TabInfo("Tab3",
+                        AppointmentsFragment.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        // Default to first tab
+        // this.onTabChanged("Tab1");
+        //
+        mTabHost.setOnTabChangedListener(this);
+    }
+
+    /**
+     * Add Tab content to the Tabhost
+     * 
+     * @param activity
+     * @param tabHost
+     * @param tabSpec
+     * @param clss
+     * @param args
+     */
+    private static void AddTab(MainActivity activity, TabHost tabHost,
+            TabHost.TabSpec tabSpec, TabInfo tabInfo) {
+        // Attach a Tab view factory to the spec
+        tabSpec.setContent(activity.new TabFactory(activity));
+        tabHost.addTab(tabSpec);
     }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
+            android.support.v4.app.FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
@@ -161,12 +202,12 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
+            android.support.v4.app.FragmentTransaction fragmentTransaction) {
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
+            android.support.v4.app.FragmentTransaction fragmentTransaction) {
     }
 
     /**
@@ -305,7 +346,6 @@ public class MainActivity extends FragmentActivity implements
 
         @Override
         protected String[] doInBackground(Void... arg0) {
-            // TODO Auto-generated method stub
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -323,5 +363,59 @@ public class MainActivity extends FragmentActivity implements
 
             super.onPostExecute(result);
         }
+    }
+
+    /**
+     * 
+     * @author Jason Maintains extrinsic info of a tab's construct
+     */
+    private class TabInfo {
+        private String tag;
+        private Class<?> clss;
+        private Bundle args;
+        private Fragment fragment;
+
+        TabInfo(String tag, Class<?> clazz, Bundle args) {
+            this.tag = tag;
+            this.clss = clazz;
+            this.args = args;
+        }
+
+    }
+
+    /**
+     * A simple factory that returns dummy views to the Tabhost
+     * 
+     * @author mwho
+     */
+    class TabFactory implements TabContentFactory {
+
+        private final Context mContext;
+
+        /**
+         * @param context
+         */
+        public TabFactory(Context context) {
+            mContext = context;
+        }
+
+        /**
+         * (non-Javadoc)
+         * 
+         * @see android.widget.TabHost.TabContentFactory#createTabContent(java.lang.String)
+         */
+        public View createTabContent(String tag) {
+            View v = new View(mContext);
+            v.setMinimumWidth(0);
+            v.setMinimumHeight(0);
+            return v;
+        }
+
+    }
+
+    @Override
+    public void onTabChanged(String arg0) {
+        int pos = this.mTabHost.getCurrentTab();
+        this.mViewPager.setCurrentItem(pos);
     }
 }
