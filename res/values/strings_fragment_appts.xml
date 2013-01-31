@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="label_branch">Branch</string>
     <string name="label_date">Date</string>
     <string name="label_time">Time</string>
     <string name="label_service">Service(s) Requesting</string>
     <string name="title_make_appt">Make An Appointment</string>
     <string name="label_submit">Submit</string>
-    <string-array name="services">
-        <item>Account Opening</item>
-        <item>Credit Card Application</item>
-        <item>Loan Application</item>
-        <item>Others</item>
+
+    <string-array name="time_slots">
+        <item>2013</item>
+        <item>2014</item>
+        <item>2015</item>
     </string-array>
-    
+    <string-array name="time_slots">
+        <item>0900am - 1000am</item>
+        <item>1000am - 1100am</item>
+        <item>1100am - 1200pm</item>
+        <item>1200am - 0100am</item>
+        <item>0100pm - 0200pm</item>
+        <item>0200pm - 0300pm</item>
+        <item>0300pm - 0400pm</item>
+        <item>0400pm - 0500pm</item>
+        <item>0600pm - 0700pm</item>
+        <item>0700pm - 0800pm</item>
+        <item>0800pm - 0900pm</item>
+    </string-array>
+
+    <string name="label_acc">Account Opening</string>
+    <string name="label_cc">Credit Card Application</string>
+    <string name="label_loan">Loan Application</string>
+    <string name="label_others">Others</string>
+
 </resources>

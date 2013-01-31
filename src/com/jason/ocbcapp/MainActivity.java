@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import android.app.ActionBar;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -110,6 +113,27 @@ public class MainActivity extends FragmentActivity implements
                 R.array.branches)));
         mAdapter = new ArrayAdapter<String>(mMainActivity,
                 android.R.layout.simple_list_item_1, mListItems);
+
+        // /** Enabling dropdown list navigation for the action bar */
+        // getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        //
+        // /** Defining Navigation listener */
+        // OnNavigationListener navigationListener = new OnNavigationListener()
+        // {
+        //
+        // @Override
+        // public boolean onNavigationItemSelected(int itemPosition, long
+        // itemId) {
+        // Toast.makeText(getBaseContext(), "You selected : " +
+        // mListItems.get(itemPosition) , Toast.LENGTH_SHORT).show();
+        // return false;
+        // }
+        // };
+        //
+        // /** Setting dropdown items and item navigation listener for the
+        // actionbar */
+        // getActionBar().setListNavigationCallbacks(mAdapter,
+        // navigationListener);
     }
 
     private void startSetup(boolean hasSetup) {
@@ -247,8 +271,6 @@ public class MainActivity extends FragmentActivity implements
 
         }
     }
-
-
 
     public class NearestBranchesListFragment extends PullToRefreshListFragment {
 
