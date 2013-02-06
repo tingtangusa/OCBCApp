@@ -97,8 +97,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     private void initializeActionBar() {
         /** Enabling dropdown list navigation for the action bar */
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        ActionBar ab = getSupportActionBar();
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
+        // Not showing title
+        //ab.setDisplayShowTitleEnabled(false);
         /** Defining Navigation listener */
         OnNavigationListener navigationListener = new OnNavigationListener() {
 
@@ -115,7 +118,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         /**
          * Setting dropdown items and item navigation listener for the actionbar
          */
-        getSupportActionBar().setListNavigationCallbacks(mAdapter, navigationListener);
+        ab.setListNavigationCallbacks(mAdapter, navigationListener);
     }
 
     private void initializeViewPager() {
@@ -156,8 +159,10 @@ public class MainActivity extends SherlockFragmentActivity implements
         mTabHost.setup();
         TabInfo tabInfo = null;
         String tabName = this.getString(R.string.title_section_branches).toUpperCase();
+        
+        View indicator1 = getLayoutInflater().inflate(R.layout.tab_indicator, null);
         MainActivity.AddTab(this, this.mTabHost,
-                this.mTabHost.newTabSpec(tabName).setIndicator(tabName),
+                this.mTabHost.newTabSpec(tabName).setIndicator(indicator1),
                 (tabInfo = new TabInfo(tabName,
                         NearestBranchesListFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);

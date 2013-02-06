@@ -6,6 +6,7 @@
 
     <TabHost
         android:id="@android:id/tabhost"
+        style="@style/Theme.ocbc"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
@@ -16,6 +17,7 @@
 
             <TabWidget
                 android:id="@android:id/tabs"
+                style="@style/Theme.ocbc"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
@@ -23,6 +25,7 @@
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
+                style="@style/Theme.ocbc.widget"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="0" />
