@@ -149,25 +149,28 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     /**
-     * Initialise the Tab Host
+     * Initialise the Tab Host, add fragments to tab host.
      */
     private void initializeTabHost(Bundle args) {
         mTabHost = (TabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup();
         TabInfo tabInfo = null;
+        String tabName = this.getString(R.string.title_section_branches).toUpperCase();
         MainActivity.AddTab(this, this.mTabHost,
-                this.mTabHost.newTabSpec("Tab1").setIndicator("Tab 1"),
-                (tabInfo = new TabInfo("Tab1",
+                this.mTabHost.newTabSpec(tabName).setIndicator(tabName),
+                (tabInfo = new TabInfo(tabName,
                         NearestBranchesListFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        tabName = this.getString(R.string.title_section_notifs).toUpperCase();
         MainActivity
-                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec("Tab2")
-                        .setIndicator("Tab 2"), (tabInfo = new TabInfo("Tab2",
+                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(tabName)
+                        .setIndicator(tabName), (tabInfo = new TabInfo(tabName,
                         DummySectionFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        tabName = this.getString(R.string.title_section_appts).toUpperCase();
         MainActivity
-                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec("Tab3")
-                        .setIndicator("Tab 3"), (tabInfo = new TabInfo("Tab3",
+                .AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(tabName)
+                        .setIndicator(tabName), (tabInfo = new TabInfo(tabName,
                         AppointmentsFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
         // Default to first tab
