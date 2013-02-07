@@ -64,9 +64,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     MainActivity mMainActivity = this;
 
-    private LinkedList<String> mListItems;
-    private ArrayAdapter<String> mAdapter;
+    private LinkedList<String> branchesList;
+    private ArrayAdapter<String> branchesAdapter;
 
+    private LinkedList<String> abDropdownList;
+    private ArrayAdapter<String> abDropdownAdapter;
+    
     private PullToRefreshListView mPullRefreshListView;
 
     @Override
@@ -86,11 +89,18 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         initializeViewPager();
 
-        mListItems = new LinkedList<String>();
-        mListItems.addAll(Arrays.asList(getResources().getStringArray(
+        // initailize branchesList
+        branchesList = new LinkedList<String>();
+        branchesList.addAll(Arrays.asList(getResources().getStringArray(
                 R.array.branches)));
-        mAdapter = new ArrayAdapter<String>(mMainActivity,
-                android.R.layout.simple_list_item_1, mListItems);
+        branchesAdapter = new ArrayAdapter<String>(mMainActivity,
+                android.R.layout.simple_list_item_1, branchesList);
+
+        // initialize actionbar dropdown list
+        abDropdownList = new LinkedList<String>();
+        abDropdownList.add(getResources().getString(R.string.title_list_least_wait));
+        abDropdownList.add(getResources().getString(R.string.title_list_nearest_branches));
+        abDropdownAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_dropdown_item, abDropdownList);
 
         initializeActionBar();
     }
@@ -109,7 +119,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             public boolean onNavigationItemSelected(int itemPosition,
                     long itemId) {
                 Toast.makeText(getBaseContext(),
-                        "You selected : " + mListItems.get(itemPosition),
+                        "You selected : " + branchesList.get(itemPosition),
                         Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -119,7 +129,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         /**
          * Setting dropdown items and item navigation listener for the actionbar
          */
-        ab.setListNavigationCallbacks(mAdapter, navigationListener);
+        ab.setListNavigationCallbacks(abDropdownAdapter, navigationListener);
     }
 
     private void initializeViewPager() {
@@ -331,7 +341,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
             this.getListView().setTextFilterEnabled(true);
 
-            this.setListAdapter(mAdapter);
+            this.setListAdapter(branchesAdapter);
             this.setEmptyText(getString(R.string.hello_world));
 
         }
@@ -359,7 +369,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
             this.getListView().setTextFilterEnabled(true);
 
-            this.setListAdapter(mAdapter);
+            this.setListAdapter(branchesAdapter);
             this.setEmptyText(getString(R.string.hello_world));
 
         }
@@ -379,8 +389,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         @Override
         protected void onPostExecute(String[] result) {
-            mListItems.addFirst("Added after refresh...");
-            mAdapter.notifyDataSetChanged();
+            branchesList.addFirst("Added after refresh...");
+            branchesAdapter.notifyDataSetChanged();
 
             // Call onRefreshComplete when the list has been refreshed.
             mPullRefreshListView.onRefreshComplete();
