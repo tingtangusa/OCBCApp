@@ -119,7 +119,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             public boolean onNavigationItemSelected(int itemPosition,
                     long itemId) {
                 Toast.makeText(getBaseContext(),
-                        "You selected : " + branchesList.get(itemPosition),
+                        "You selected : " + abDropdownList.get(itemPosition),
                         Toast.LENGTH_SHORT).show();
                 return false;
             }
