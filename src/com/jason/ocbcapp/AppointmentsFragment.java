@@ -14,8 +14,10 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ public class AppointmentsFragment extends Fragment {
     ArrayList<CharSequence> dateList;
     ArrayAdapter<CharSequence> dateAdapter;
     SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM, yyyy");
+    
 
     public AppointmentsFragment() {
 
@@ -63,12 +66,25 @@ public class AppointmentsFragment extends Fragment {
             });
 
         }
+        
+        
+        // Setup submit button
+        Button submitButton = (Button) getView().findViewById(R.id.submitButton);
+        submitButton.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                Dialog d = new Dialog(getActivity());
+                d.setContentView(R.layout.activity_circle_screen);
+                d.show();
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View apptView = inflater.inflate(R.layout.fragmentlayout, container,
+        View apptView = inflater.inflate(R.layout.fragment_appt, container,
                 false);
 
         return apptView;
