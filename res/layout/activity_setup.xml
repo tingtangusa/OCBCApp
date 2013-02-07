@@ -57,13 +57,15 @@
 
             <EditText
                 android:id="@+id/mobile"
+                style="@style/ocbc_transparent_ActionBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="@string/prompt_mobile"
                 android:inputType="phone"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColorLink="@color/pressed_ocbc" />
 
             <Button
                 android:id="@+id/sign_in_button"

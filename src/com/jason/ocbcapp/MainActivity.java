@@ -191,7 +191,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         titleTv.setText(tabName);
         MainActivity.AddTab(this, this.mTabHost,
                 this.mTabHost.newTabSpec(tabName).setIndicator(indicator),
-                (tabInfo = new TabInfo(tabName, DummySectionFragment.class,
+                (tabInfo = new TabInfo(tabName, NotificationsFragment.class,
                         args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
@@ -262,6 +262,8 @@ public class MainActivity extends SherlockFragmentActivity implements
             switch (position) {
             case 0:
                 return new LeastWaitingTimeListFragment();
+            case 1:
+                return new NotificationsFragment();
             case 2:
                 return new AppointmentsFragment();
             }
@@ -400,8 +402,8 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     /**
-     * 
-     * @author Jason Maintains extrinsic info of a tab's construct
+     * Maintains extrinsic info of a tab's construct
+     * @author Jason
      */
     private class TabInfo {
         private String tag;
@@ -420,7 +422,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     /**
      * A simple factory that returns dummy views to the Tabhost
      * 
-     * @author mwho
+     * @author Jason
      */
     class TabFactory implements TabContentFactory {
 
