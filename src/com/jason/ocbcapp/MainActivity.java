@@ -115,6 +115,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             }
         };
 
+        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_solid_ocbc));
         /**
          * Setting dropdown items and item navigation listener for the actionbar
          */
@@ -173,9 +174,7 @@ public class MainActivity extends SherlockFragmentActivity implements
                         NearestBranchesListFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
-        
-        indicator = getLayoutInflater().inflate(R.layout.tab_indicator,
-                null);
+        indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
         titleTv = (TextView) indicator.findViewById(R.id.title);
 
         tabName = this.getString(R.string.title_section_notifs).toUpperCase();
@@ -186,8 +185,7 @@ public class MainActivity extends SherlockFragmentActivity implements
                         args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
-        indicator = getLayoutInflater().inflate(R.layout.tab_indicator,
-                null);
+        indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
         titleTv = (TextView) indicator.findViewById(R.id.title);
         tabName = this.getString(R.string.title_section_appts).toUpperCase();
         titleTv.setText(tabName);
