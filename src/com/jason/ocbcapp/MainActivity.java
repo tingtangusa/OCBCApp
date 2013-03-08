@@ -1,8 +1,25 @@
 package com.jason.ocbcapp;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Scanner;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -21,6 +38,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -30,7 +49,6 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -39,6 +57,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class MainActivity extends SherlockFragmentActivity implements
         ActionBar.TabListener, TabHost.OnTabChangeListener {
+
+    // The tag for Android Logger
+    String APP_TAG = "OCBCApp";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -69,7 +90,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     private LinkedList<String> abDropdownList;
     private ArrayAdapter<String> abDropdownAdapter;
-    
+
     private PullToRefreshListView mPullRefreshListView;
 
     @Override
@@ -98,9 +119,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         // initialize actionbar dropdown list
         abDropdownList = new LinkedList<String>();
-        abDropdownList.add(getResources().getString(R.string.title_list_least_wait));
-        abDropdownList.add(getResources().getString(R.string.title_list_nearest_branches));
-        abDropdownAdapter = new ArrayAdapter<String>(mMainActivity, android.R.layout.simple_spinner_dropdown_item, abDropdownList);
+        abDropdownList.add(getResources().getString(
+                R.string.title_list_least_wait));
+        abDropdownList.add(getResources().getString(
+                R.string.title_list_nearest_branches));
+        abDropdownAdapter = new ArrayAdapter<String>(mMainActivity,
+                android.R.layout.simple_spinner_dropdown_item, abDropdownList);
 
         initializeActionBar();
     }
@@ -125,7 +149,8 @@ public class MainActivity extends SherlockFragmentActivity implements
             }
         };
 
-        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_solid_ocbc));
+        ab.setBackgroundDrawable(getResources().getDrawable(
+                R.drawable.ab_solid_ocbc));
         /**
          * Setting dropdown items and item navigation listener for the actionbar
          */
@@ -344,9 +369,73 @@ public class MainActivity extends SherlockFragmentActivity implements
             this.getListView().setTextFilterEnabled(true);
 
             this.setListAdapter(branchesAdapter);
+            ListView list = this.getListView();
+            list.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> av, View view,
+                        int position, long id) {
+                    // TODO Auto-generated method stub
+                    // showToast("clicked id = " + id + ", pos = " + position);
+                    Log.d(APP_TAG, "executing task");
+                    RequestTask task = new RequestTask();
+                    task.execute("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetAllBranches");
+                }
+            });
             this.setEmptyText(getString(R.string.hello_world));
 
         }
+
+        class RequestTask extends AsyncTask<String, String, String> {
+
+            @Override
+            protected String doInBackground(String... uri) {
+                String responseString = null;
+                InputStream responseStream = null;
+                HttpURLConnection urlConnection = null;
+                try {
+                    URL url = new URL(uri[0]);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    responseStream = new BufferedInputStream(
+                            urlConnection.getInputStream());
+                    Log.d(APP_TAG,
+                            "response code: " + urlConnection.getResponseCode());
+                    responseString = readStream(responseStream);
+                } catch (Exception e) {
+                    Log.e(APP_TAG, e.getMessage());
+                }
+                return responseString;
+            }
+
+            private String readStream(InputStream inputStream) {
+                // TODO Auto-generated method stub
+                StringBuilder buf = new StringBuilder();
+                Scanner sc = null;
+                BufferedReader reader = null;
+                try {
+                    /*
+                     * sc = new Scanner(inputStream); while (sc.hasNext()) {
+                     * buf.append(sc.next()); }
+                     */
+                    reader = new BufferedReader(new InputStreamReader(
+                            inputStream));
+                    String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        buf.append(line);
+                    }
+                } catch (Exception e) {
+                    Log.e(APP_TAG, e.getMessage());
+                }
+                return buf.toString();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                // Do anything with response..
+                showToast(result);
+            }
+        }
+
     }
 
     public class NearestBranchesListFragment extends PullToRefreshListFragment {
@@ -403,6 +492,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     /**
      * Maintains extrinsic info of a tab's construct
+     * 
      * @author Jason
      */
     private class TabInfo {
@@ -453,5 +543,10 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onTabChanged(String arg0) {
         int pos = this.mTabHost.getCurrentTab();
         this.mViewPager.setCurrentItem(pos);
+    }
+
+    public void showToast(String string) {
+        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT)
+                .show();
     }
 }
