@@ -20,6 +20,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -59,7 +61,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         ActionBar.TabListener, TabHost.OnTabChangeListener {
 
     // The tag for Android Logger
-    String APP_TAG = "OCBCApp";
+    public final static String APP_TAG = "OCBCApp";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -344,98 +346,6 @@ public class MainActivity extends SherlockFragmentActivity implements
                     ARG_SECTION_NUMBER)));
             return textView;
         }
-    }
-
-    public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
-
-        public LeastWaitingTimeListFragment() {
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-
-            mPullRefreshListView = this.getPullToRefreshListView();
-            mPullRefreshListView
-                    .setOnRefreshListener(new OnRefreshListener<ListView>() {
-                        @Override
-                        public void onRefresh(
-                                PullToRefreshBase<ListView> refreshView) {
-                            GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
-                            task.execute();
-                        }
-                    });
-
-            this.getListView().setTextFilterEnabled(true);
-
-            this.setListAdapter(branchesAdapter);
-            ListView list = this.getListView();
-            list.setOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> av, View view,
-                        int position, long id) {
-                    // TODO Auto-generated method stub
-                    // showToast("clicked id = " + id + ", pos = " + position);
-                    Log.d(APP_TAG, "executing task");
-                    RequestTask task = new RequestTask();
-                    task.execute("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetAllBranches");
-                }
-            });
-            this.setEmptyText(getString(R.string.hello_world));
-
-        }
-
-        class RequestTask extends AsyncTask<String, String, String> {
-
-            @Override
-            protected String doInBackground(String... uri) {
-                String responseString = null;
-                InputStream responseStream = null;
-                HttpURLConnection urlConnection = null;
-                try {
-                    URL url = new URL(uri[0]);
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    responseStream = new BufferedInputStream(
-                            urlConnection.getInputStream());
-                    Log.d(APP_TAG,
-                            "response code: " + urlConnection.getResponseCode());
-                    responseString = readStream(responseStream);
-                } catch (Exception e) {
-                    Log.e(APP_TAG, e.getMessage());
-                }
-                return responseString;
-            }
-
-            private String readStream(InputStream inputStream) {
-                // TODO Auto-generated method stub
-                StringBuilder buf = new StringBuilder();
-                Scanner sc = null;
-                BufferedReader reader = null;
-                try {
-                    /*
-                     * sc = new Scanner(inputStream); while (sc.hasNext()) {
-                     * buf.append(sc.next()); }
-                     */
-                    reader = new BufferedReader(new InputStreamReader(
-                            inputStream));
-                    String line = "";
-                    while ((line = reader.readLine()) != null) {
-                        buf.append(line);
-                    }
-                } catch (Exception e) {
-                    Log.e(APP_TAG, e.getMessage());
-                }
-                return buf.toString();
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                super.onPostExecute(result);
-                // Do anything with response..
-                showToast(result);
-            }
-        }
-
     }
 
     public class NearestBranchesListFragment extends PullToRefreshListFragment {
