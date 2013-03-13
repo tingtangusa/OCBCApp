@@ -83,7 +83,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/branchName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_service"
@@ -115,7 +115,7 @@
         android:text="@string/label_others" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/waitingTimeBtn"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"

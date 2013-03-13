@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -32,18 +33,17 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
     static final String APP_TAG = MainActivity.APP_TAG;
     private PullToRefreshListView mPullRefreshListView;
 
-    private LinkedList<String> branchesList;
-    private ArrayAdapter<String> branchesAdapter;
+    private ArrayList<String> branchesList;
+    private BranchesAdapter branchesAdapter;
 
     public LeastWaitingTimeListFragment() {
     }
     
     private void initBranchesList() {
-        branchesList = new LinkedList<String>();
+        branchesList = new ArrayList<String>();
         branchesList.addAll(Arrays.asList(getResources().getStringArray(
                 R.array.branches)));
-        branchesAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, branchesList);
+        branchesAdapter = new BranchesAdapter(getActivity(), branchesList);
     }
 
     @Override
@@ -66,77 +66,11 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
         this.getListView().setTextFilterEnabled(true);
 
         this.setListAdapter(branchesAdapter);
-        ListView list = this.getListView();
-        list.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> av, View view, int position,
-                    long id) {
-                // TODO Auto-generated method stub
-                // showToast("clicked id = " + id + ", pos = " + position);
-                Log.d(APP_TAG, "executing task");
-                RequestTask task = new RequestTask();
-                task.execute("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranch/"
-                        + id);
-            }
-        });
+
         this.setEmptyText(getString(R.string.hello_world));
 
     }
 
-    class RequestTask extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... uri) {
-            String responseString = null;
-            InputStream responseStream = null;
-            HttpURLConnection urlConnection = null;
-            try {
-                URL url = new URL(uri[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.addRequestProperty("Content-type",
-                        "application/json");
-                responseStream = new BufferedInputStream(
-                        urlConnection.getInputStream());
-                Log.d(APP_TAG,
-                        "response code: " + urlConnection.getResponseCode());
-                responseString = readStream(responseStream);
-            } catch (Exception e) {
-                Log.e(APP_TAG, e.getMessage());
-            }
-            return responseString;
-        }
-
-        private String readStream(InputStream inputStream) {
-            // TODO Auto-generated method stub
-            StringBuilder buf = new StringBuilder();
-            Scanner sc = null;
-            try {
-
-                sc = new Scanner(inputStream);
-                while (sc.hasNext()) {
-                    buf.append(sc.next());
-                }
-
-            } catch (Exception e) {
-                Log.e(APP_TAG, e.getMessage());
-            }
-            return buf.toString();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            // Extract waiting time from json object
-            Log.d(APP_TAG, "finished request task, showing waiting time");
-            try {
-                JSONObject jObj = new JSONObject(result);
-                String id = jObj.getString("waitingTime");
-                Toast.makeText(getActivity(), id, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private class GetLeastWaitingTimeTask extends
             AsyncTask<Void, Void, String[]> {
@@ -152,7 +86,7 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
 
         @Override
         protected void onPostExecute(String[] result) {
-            branchesList.addFirst("Added after refresh...");
+            branchesList.add(0, "Added after refresh...");
             branchesAdapter.notifyDataSetChanged();
 
             // Call onRefreshComplete when the list has been refreshed.

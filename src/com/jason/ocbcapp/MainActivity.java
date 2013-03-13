@@ -208,7 +208,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         MainActivity.AddTab(this, this.mTabHost,
                 this.mTabHost.newTabSpec(tabName).setIndicator(indicator),
                 (tabInfo = new TabInfo(tabName,
-                        NearestBranchesListFragment.class, args)));
+                        LeastWaitingTimeListFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
         indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
@@ -345,58 +345,6 @@ public class MainActivity extends SherlockFragmentActivity implements
             textView.setText(Integer.toString(getArguments().getInt(
                     ARG_SECTION_NUMBER)));
             return textView;
-        }
-    }
-
-    public class NearestBranchesListFragment extends PullToRefreshListFragment {
-
-        public NearestBranchesListFragment() {
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-
-            mPullRefreshListView = this.getPullToRefreshListView();
-            mPullRefreshListView
-                    .setOnRefreshListener(new OnRefreshListener<ListView>() {
-                        @Override
-                        public void onRefresh(
-                                PullToRefreshBase<ListView> refreshView) {
-                            GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
-                            task.execute();
-                        }
-                    });
-
-            this.getListView().setTextFilterEnabled(true);
-
-            this.setListAdapter(branchesAdapter);
-            this.setEmptyText(getString(R.string.hello_world));
-
-        }
-    }
-
-    private class GetLeastWaitingTimeTask extends
-            AsyncTask<Void, Void, String[]> {
-
-        @Override
-        protected String[] doInBackground(Void... arg0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            return getResources().getStringArray(R.array.branches);
-        }
-
-        @Override
-        protected void onPostExecute(String[] result) {
-            branchesList.addFirst("Added after refresh...");
-            branchesAdapter.notifyDataSetChanged();
-
-            // Call onRefreshComplete when the list has been refreshed.
-            mPullRefreshListView.onRefreshComplete();
-
-            super.onPostExecute(result);
         }
     }
 
