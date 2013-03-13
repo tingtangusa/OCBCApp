@@ -56,44 +56,54 @@ public class BranchesAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View vi = convertView;
-        if (convertView == null)
-            vi = inflater.inflate(R.layout.branches_row, null);
+        ViewHolder holder = null;
+        
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.branches_row, null);
+            
+            holder = new ViewHolder();
+            holder.name = (TextView) convertView.findViewById(R.id.branchName);
+            holder.btn = (Button) convertView.findViewById(R.id.waitingTimeBtn);
+            holder.pb = (ProgressBar) convertView.findViewById(R.id.progressBar);
+            
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        
 
-        TextView name = (TextView) vi.findViewById(R.id.branchName);
-        Button btn = (Button) vi.findViewById(R.id.waitingTimeBtn);
-        ProgressBar pb = (ProgressBar) vi.findViewById(R.id.progressBar);
-        pb.setVisibility(View.INVISIBLE);
-
-        name.setText(data.get(position));
-        btn.setOnClickListener(new OnClickListener() {
+        holder.pb.setVisibility(View.INVISIBLE);
+        holder.name.setText(data.get(position));
+        holder.btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Button btnClicked = (Button) v;
-                Log.d(APP_TAG, "executing task");
-                RequestTask task = new RequestTask();
-                task.execute(new Pair<String, Button>("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranch/"
-                        + position, btnClicked));
                 View view = (View) v.getParent();
                 ProgressBar pb = (ProgressBar) view.findViewById(R.id.progressBar);
+                Log.d(APP_TAG, "executing task");
+                RequestTask task = new RequestTask();
+                task.execute(new Triple<String, Button, ProgressBar>("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranch/"
+                        + position, btnClicked, pb));
                 pb.setVisibility(View.VISIBLE);
                 Log.d(APP_TAG, "Visibility: " + pb.getVisibility());
                 pb.bringToFront();
             }
         });
-        return vi;
+        return convertView;
     }
-    class RequestTask extends AsyncTask<Pair<String,Button>, String, String> {
+    class RequestTask extends AsyncTask<Triple<String,Button,ProgressBar>, String, String> {
         
         private Button btnClicked = null;
+        private ProgressBar pb = null;
         @Override
-        protected String doInBackground(Pair<String,Button>... pair) {
+        protected String doInBackground(Triple<String,Button,ProgressBar>... triple) {
             String responseString = null;
             InputStream responseStream = null;
             HttpURLConnection urlConnection = null;
             try {
-                URL url = new URL(pair[0].first);
-                btnClicked = pair[0].second;
+                URL url = new URL(triple[0].first);
+                btnClicked = triple[0].second;
+                pb = triple[0].third;
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.addRequestProperty("Content-type",
                         "application/json");
@@ -134,13 +144,28 @@ public class BranchesAdapter extends BaseAdapter {
                 JSONObject jObj = new JSONObject(result);
                 String waitingTime = jObj.getString("waitingTime");
                 btnClicked.setText(waitingTime + "mins");
-                View parentView = (View) btnClicked.getParent();
-                ProgressBar pb = (ProgressBar) parentView.findViewById(R.id.progressBar);
                 pb.setVisibility(View.INVISIBLE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
+    
+    static class ViewHolder {
+        TextView name;
+        Button btn;
+        ProgressBar pb;
+    }
 
+    static class Triple<F,S,T> {
+        public final F first;
+        public final S second;
+        public final T third;
+        
+        public Triple(F first, S second, T third) {
+            this.first = first;
+            this.second = second;
+            this.third = third;
+        }
+    }
 }
