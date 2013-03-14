@@ -7,3 +7,4 @@ OCBCApp UI
   - Able to communicate with server but date is not set.
 - Register phone with server
 - QR code generator
+- Location Aware to detect nearest branches
