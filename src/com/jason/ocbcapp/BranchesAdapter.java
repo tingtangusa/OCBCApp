@@ -37,6 +37,7 @@ public class BranchesAdapter extends BaseAdapter {
     public BranchesAdapter(Activity activity, ArrayList<String> data) {
         this.activity = activity;
         this.data = data;
+        waitingTimes = new int[data.size()];
         for (int i = 0; i < waitingTimes.length; i++) {
             waitingTimes[i] = -1;
         }
