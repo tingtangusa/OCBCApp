@@ -91,25 +91,25 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/accCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_acc" />
 
     <CheckBox
-        android:id="@+id/checkBox2"
+        android:id="@+id/ccCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_cc" />
 
     <CheckBox
-        android:id="@+id/checkBox3"
+        android:id="@+id/loanCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_loan" />
 
     <CheckBox
-        android:id="@+id/checkBox4"
+        android:id="@+id/othersCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_others" />

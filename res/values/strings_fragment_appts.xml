@@ -31,5 +31,6 @@
     <string name="label_cc">Credit Card Application</string>
     <string name="label_loan">Loan Application</string>
     <string name="label_others">Others</string>
+    <string name="label_queue_text">Your queue number is</string>
 
 </resources>
