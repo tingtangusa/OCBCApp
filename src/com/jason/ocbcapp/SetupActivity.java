@@ -1,20 +1,36 @@
 package com.jason.ocbcapp;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 /**
@@ -24,18 +40,26 @@ import android.widget.TextView;
 public class SetupActivity extends Activity {
 
     /**
-     * Keep track of the login task to ensure we can cancel it if requested.
+     * Keep track of the setup task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private SetupTask task = null;
 
-    // Values for email and password at the time of the login attempt.
-    private String mMobile;
+    // Values for name, id type, id and mobile
+    private String name;
+    private String id;
+    private String idType;
+    private String mobile;
 
     // UI references.
-    private EditText mMobileView;
+    private EditText custMobile;
+    private EditText custName;
+    private EditText custId;
+    private Spinner idTypeSpinner;
     private View mLoginFormView;
     private View mLoginStatusView;
-    private TextView mLoginStatusMessageView;
+    
+    //logger tag
+    private static final String APP_TAG = MainActivity.APP_TAG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +68,13 @@ public class SetupActivity extends Activity {
         setContentView(R.layout.activity_setup);
 
         // Set up the setup form.
-        mMobileView = (EditText) findViewById(R.id.mobile);
+        custMobile = (EditText) findViewById(R.id.custMobile);
+        custName = (EditText) findViewById(R.id.custName);
+        custId = (EditText) findViewById(R.id.custId);
+        idTypeSpinner = (Spinner) findViewById(R.id.idTypeSpinner);
 
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusView = findViewById(R.id.login_status);
-        mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
 
         findViewById(R.id.sign_in_button).setOnClickListener(
                 new View.OnClickListener() {
@@ -69,10 +95,7 @@ public class SetupActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("hasSetup", true);
-        editor.commit();
+
     }
 
     /**
@@ -81,41 +104,64 @@ public class SetupActivity extends Activity {
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
+        if (task != null) {
             return;
         }
 
         // Reset errors.
-        mMobileView.setError(null);
+        custName.setError(null);
+        custId.setError(null);
+        custMobile.setError(null);
 
         // Store values at the time of the login attempt.
-        mMobile = mMobileView.getText().toString();
+        name = custName.getText().toString();
+        id = custId.getText().toString();
+        mobile = custMobile.getText().toString();
+        idType = (String) idTypeSpinner.getSelectedItem();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(mMobile)) {
-            mMobileView.setError(getString(R.string.error_field_required));
-            focusView = mMobileView;
+        // Check for valid fields
+        if (TextUtils.isEmpty(name)) {
+            custName.setError(getString(R.string.error_field_required));
+            focusView = custName;
             cancel = true;
-        } else if (!PhoneNumberUtils.isGlobalPhoneNumber(mMobile)) {
-            mMobileView.setError(getString(R.string.error_invalid_mobile));
-            focusView = mMobileView;
+        } else if (TextUtils.isEmpty(id)) {
+            custId.setError(getString(R.string.error_field_required));
+            focusView = custName;
+            cancel = true;
+        } else if (TextUtils.isEmpty(mobile)) {
+            custMobile.setError(getString(R.string.error_field_required));
+            focusView = custMobile;
+            cancel = true;
+        } else if (!PhoneNumberUtils.isGlobalPhoneNumber(mobile)) {
+            custMobile.setError(getString(R.string.error_invalid_mobile));
+            focusView = custMobile;
             cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // There was an error; don't attempt setup
+            // flag form field with an error.
             focusView.requestFocus();
         } else {
             // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
+            // perform the user setup attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask();
-            mAuthTask.execute((Void) null);
+            JSONObject jobj = new JSONObject();
+            try {
+                jobj.accumulate("customerName", name);
+                jobj.accumulate("customerIdNumber", id);
+                jobj.accumulate("customerIdType", idType);
+                jobj.accumulate("customerMobile", mobile);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            task = new SetupTask();
+            String url = "http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Customer/addCustomer";
+            Pair<String, JSONObject> pair = new Pair<String, JSONObject>(url, jobj);
+            task.execute(pair);
         }
     }
 
@@ -161,42 +207,101 @@ public class SetupActivity extends Activity {
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
+     * Represents an asynchronous setup task used to register
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class SetupTask extends AsyncTask<Pair<String, JSONObject>, Void, String> {
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected String doInBackground(Pair<String, JSONObject>... pair) {
+            // init our variables for the http connection
+            String responseString = null;
+            InputStream responseStream = null;
+            HttpURLConnection urlConnection = null;
+            OutputStreamWriter writer = null;
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                URL url = new URL(pair[0].first);
+                JSONObject data = pair[0].second;
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.addRequestProperty("Content-type", "application/json");
+                urlConnection.setRequestMethod("POST");
+                urlConnection.connect();
 
-            // TODO: register the new account here.
-            return true;
+                // write our json object to the connection
+                writer = new OutputStreamWriter(urlConnection.getOutputStream());
+                writer.write(data.toString());
+                writer.close();
+
+                responseStream = new BufferedInputStream( urlConnection.getInputStream());
+                Log.d(APP_TAG, "response code: " + urlConnection.getResponseCode());
+                responseString = readStream(responseStream);
+            } catch (Exception e) {
+                Log.e(APP_TAG, e.getMessage());
+                showProgress(false);
+                showTryAgainDialog();
+                return "";
+            }
+            return responseString;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
+        protected void onPostExecute(String token) {
+            task = null;
             showProgress(false);
 
-            if (success) {
-                // done with setup, exit activity
-                finish();
+            if (TextUtils.isEmpty(token)) {
+                // token is null, something is terribly wrong
+                Log.w(APP_TAG, "server gave a empty token");
+                showTryAgainDialog();
             } else {
+                Log.d(APP_TAG, "got response for setup: " + token);
 
+                Intent result = new Intent();
+                result.putExtra("userToken", token);
+                setResult(Activity.RESULT_OK, result);
+                finish();
             }
+        }
+        
+        private String readStream(InputStream inputStream) {
+            // TODO Auto-generated method stub
+            StringBuilder buf = new StringBuilder();
+            Scanner sc = null;
+            try {
+
+                sc = new Scanner(inputStream);
+                while (sc.hasNext()) {
+                    buf.append(sc.next());
+                }
+
+            } catch (Exception e) {
+                Log.e(APP_TAG, e.getMessage());
+            }
+            return buf.toString();
         }
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
+            task = null;
             showProgress(false);
         }
+    }
+
+    // something to show the user when something bad happens
+    public void showTryAgainDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Something bad has happened, please try again.").setTitle("Oh noes...");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog tryAgainDialog = builder.create();
+        tryAgainDialog.show();
     }
 }

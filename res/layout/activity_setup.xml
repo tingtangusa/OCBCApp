@@ -19,14 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:id="@+id/login_status_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/login_progress_signing_in"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
     <!-- Login form -->
@@ -56,7 +48,40 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <EditText
-                android:id="@+id/mobile"
+                android:id="@+id/custName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/ab_transparent_ocbc"
+                android:ems="10"
+                android:hint="@string/prompt_full_name"
+                android:inputType="textPersonName"
+                android:paddingTop="10dp"
+                android:textColorLink="@color/pressed_ocbc"
+                android:textSize="20sp" >
+
+                <requestFocus />
+            </EditText>
+
+            <Spinner
+                android:id="@+id/idTypeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/id_types"
+                android:paddingTop="10dp" />
+
+            <EditText
+                android:id="@+id/custId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ab_transparent_ocbc"
+                android:ems="10"
+                android:hint="@string/prompt_id"
+                android:paddingTop="10dp"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/custMobile"
                 style="@style/ocbc_transparent_ActionBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,8 +90,10 @@
                 android:hint="@string/prompt_mobile"
                 android:inputType="phone"
                 android:maxLines="1"
+                android:paddingTop="10dp"
                 android:singleLine="true"
-                android:textColorLink="@color/pressed_ocbc" />
+                android:textColorLink="@color/pressed_ocbc"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/sign_in_button"

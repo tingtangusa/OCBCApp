@@ -11,10 +11,17 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="instruction_key_mobile">To get started, please key in your mobile number:</string>
+    <string name="instruction_key_mobile">To get started, please key in your details:</string>
     <string name="prompt_mobile">Mobile Number</string>
     <string name="welcome_setup">Welcome</string>
     <string name="error_invalid_mobile">This number is invalid</string>
     <string name="title_activity_setup">Setup</string>
+    <string name="prompt_full_name">Full Name</string>
+    <string name="prompt_id">ID (e.g S1234567A)</string>
+    <string-array name="id_types">
+        <item>NRIC</item>
+        <item>FIN</item>
+        <item>Passport</item>
+    </string-array>
 
 </resources>

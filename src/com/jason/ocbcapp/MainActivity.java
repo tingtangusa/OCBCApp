@@ -1,49 +1,23 @@
 package com.jason.ocbcapp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Scanner;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
@@ -52,9 +26,6 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class MainActivity extends SherlockFragmentActivity implements
@@ -87,13 +58,22 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     MainActivity mMainActivity = this;
 
-    private LinkedList<String> branchesList;
-    private ArrayAdapter<String> branchesAdapter;
-
     private LinkedList<String> abDropdownList;
     private ArrayAdapter<String> abDropdownAdapter;
 
     private PullToRefreshListView mPullRefreshListView;
+
+    // The request type when we want the SetupActivity to perform
+    // setup for the user
+    static final int SETUP_REQUEST = 1;
+
+    // token that uniquely identifies the user on the server
+    public String userToken = null;
+
+    // state to store whether user has already done the setting up
+    private boolean hasSetup = false;
+
+    SharedPreferences settings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,23 +81,18 @@ public class MainActivity extends SherlockFragmentActivity implements
         setContentView(R.layout.activity_main);
 
         // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        settings = getSharedPreferences(PREFS_NAME, 0);
 
         // start SetupActivity if user has not setup the app
-        boolean hasSetup = settings.getBoolean("hasSetup", false);
+        hasSetup = settings.getBoolean("hasSetup", false);
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
-        startSetup(hasSetup);
+        startSetup();
+        initUserToken();
+        Log.i("OCBCApp", "user token = " + userToken);
 
         initializeTabHost(savedInstanceState);
 
         initializeViewPager();
-
-        // initailize branchesList
-        branchesList = new LinkedList<String>();
-        branchesList.addAll(Arrays.asList(getResources().getStringArray(
-                R.array.branches)));
-        branchesAdapter = new ArrayAdapter<String>(mMainActivity,
-                android.R.layout.simple_list_item_1, branchesList);
 
         // initialize actionbar dropdown list
         abDropdownList = new LinkedList<String>();
@@ -129,6 +104,14 @@ public class MainActivity extends SherlockFragmentActivity implements
                 android.R.layout.simple_spinner_dropdown_item, abDropdownList);
 
         initializeActionBar();
+    }
+
+    private void initUserToken() {
+        if (hasSetup)
+            userToken = settings.getString("userToken", "");
+        else {
+            Log.wtf(APP_TAG, "can't init token without setting up");
+        }
     }
 
     private void initializeActionBar() {
@@ -181,12 +164,49 @@ public class MainActivity extends SherlockFragmentActivity implements
                 });
     }
 
-    private void startSetup(boolean hasSetup) {
+    // starts the setup activity and waits for the user's token
+    private void startSetup() {
         if (!hasSetup) {
             Log.i("OCBCApp", "Starting setup");
             Intent intent = new Intent(this, SetupActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, SETUP_REQUEST);
         }
+    }
+
+    // work on the result that the activities return
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(APP_TAG, "returned from activity");
+        // make sure we are responding to the setup request
+        if (requestCode == SETUP_REQUEST) {
+            // make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                storeToken(data.getStringExtra("userToken"));
+            }
+        }
+    }
+
+    // stores the token we got from SetupActivity
+    private void storeToken(String token) {
+        if (TextUtils.isEmpty(token)) {
+            Log.wtf(APP_TAG, "token is empty!");
+        } else {
+            Log.d(APP_TAG, "Storing token: " + token);
+            Log.d(APP_TAG, "Storing token, hasSetup : " + hasSetup);
+            userToken = token;
+            // we got the token, user has performed setup
+            hasSetup = true;
+            commitTokenToPrefs(userToken);
+        }
+    }
+
+    private void commitTokenToPrefs(String userToken) {
+        settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("hasSetup", true);
+        editor.putString("userToken", userToken);
+        editor.commit();
+        Log.d(APP_TAG, "after commiting, hasSetup: " + hasSetup);
     }
 
     /**
