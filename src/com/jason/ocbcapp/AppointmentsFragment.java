@@ -39,6 +39,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 
 public class AppointmentsFragment extends Fragment {
 
@@ -127,7 +128,7 @@ public class AppointmentsFragment extends Fragment {
             public void onClick(View v) {
                 // setup variables to send
                 String dateString = "2013-03-14T03:45:53.447Z";
-                String userToken = "c23925eb8c9ecb12ce5ac0f3825078ef888dae9509971723e4930b983a17823e";
+                String userToken = getTokenFromPrefs();
                 String branchId = "" + branchesSpinner.getSelectedItemPosition();
                 JSONObject jobj = new JSONObject();
                 JSONArray jsonStates = new JSONArray();
@@ -153,6 +154,16 @@ public class AppointmentsFragment extends Fragment {
                 loadingDialog = new Dialog(getActivity());
                 loadingDialog.setContentView(R.layout.dialog_loading_screen);
                 loadingDialog.show();
+            }
+
+            /*
+             * Retrieves the userToken string from the phone's shared preference
+             */
+            private String getTokenFromPrefs() {
+                SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
+                String userToken = settings.getString("userToken", "");
+                Log.d(APP_TAG, userToken);
+                return userToken;
             }
         });
     }
