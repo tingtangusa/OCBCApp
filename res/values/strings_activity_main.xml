@@ -6,6 +6,7 @@
     <string name="title_list_nearest_branches">Nearest To You</string>
     <string name="title_list_least_wait">Least Waiting Time</string>
     <string name="hello_world">Hello world!</string>
+    <string name="menu_get_qr">Get QR</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_branches">BranchesActivity</string>
     <string-array name="branches">

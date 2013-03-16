@@ -34,6 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.jason.ocbcapp.GetQrActivity"
+            android:label="@string/title_activity_get_qr" >
+        </activity>
     </application>
 
 </manifest>

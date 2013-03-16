@@ -23,9 +23,15 @@ import android.widget.TabHost.TabContentFactory;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// ActionBarSherlock imports
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
+// PullToRefreshList import
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class MainActivity extends SherlockFragmentActivity implements
@@ -86,7 +92,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         // start SetupActivity if user has not setup the app
         hasSetup = settings.getBoolean("hasSetup", false);
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
-        startSetup();
+        startSetupActivity();
         initializeUserToken();
         Log.i("OCBCApp", "user token = " + userToken);
 
@@ -172,7 +178,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     // starts the setup activity and waits for the user's token
-    private void startSetup() {
+    private void startSetupActivity() {
         if (!hasSetup) {
             Log.i("OCBCApp", "Starting setup");
             Intent intent = new Intent(this, SetupActivity.class);
@@ -296,6 +302,32 @@ public class MainActivity extends SherlockFragmentActivity implements
     @Override
     public void onTabReselected(ActionBar.Tab tab,
             android.support.v4.app.FragmentTransaction fragmentTransaction) {
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        case R.id.menu_get_qr:
+            startGetQrIntent();
+            return true;
+        case R.id.menu_settings:
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startGetQrIntent() {
+        Intent intent = new Intent(this, GetQrActivity.class);
+        startActivity(intent);
     }
 
     /**
