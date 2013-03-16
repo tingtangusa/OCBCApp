@@ -87,7 +87,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         hasSetup = settings.getBoolean("hasSetup", false);
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
         startSetup();
-        initUserToken();
+        initializeUserToken();
         Log.i("OCBCApp", "user token = " + userToken);
 
         initializeTabHost(savedInstanceState);
@@ -95,6 +95,15 @@ public class MainActivity extends SherlockFragmentActivity implements
         initializeViewPager();
 
         // initialize actionbar dropdown list
+        initializeActionBarDropDownList();
+
+        initializeActionBar();
+    }
+
+    /**
+     * 
+     */
+    private void initializeActionBarDropDownList() {
         abDropdownList = new LinkedList<String>();
         abDropdownList.add(getResources().getString(
                 R.string.title_list_least_wait));
@@ -102,11 +111,9 @@ public class MainActivity extends SherlockFragmentActivity implements
                 R.string.title_list_nearest_branches));
         abDropdownAdapter = new ArrayAdapter<String>(mMainActivity,
                 android.R.layout.simple_spinner_dropdown_item, abDropdownList);
-
-        initializeActionBar();
     }
 
-    private void initUserToken() {
+    private void initializeUserToken() {
         if (hasSetup)
             userToken = settings.getString("userToken", "");
         else {
