@@ -101,7 +101,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         // initialize actionbar dropdown list
         initializeActionBarDropDownList();
 
-        initializeActionBar();
+        showActionBarDropDownList();
     }
 
     /**
@@ -125,10 +125,10 @@ public class MainActivity extends SherlockFragmentActivity implements
         }
     }
 
-    private void initializeActionBar() {
+    private void showActionBarDropDownList() {
         /** Enabling dropdown list navigation for the action bar */
-        ActionBar ab = getSupportActionBar();
-        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
         // Not showing title
         // ab.setDisplayShowTitleEnabled(false);
@@ -138,19 +138,22 @@ public class MainActivity extends SherlockFragmentActivity implements
             @Override
             public boolean onNavigationItemSelected(int itemPosition,
                     long itemId) {
-                Toast.makeText(getBaseContext(),
-                        "You selected : " + abDropdownList.get(itemPosition),
-                        Toast.LENGTH_SHORT).show();
+                Log.d(APP_TAG, "selected " + abDropdownList.get(itemPosition));
                 return false;
             }
         };
 
-        ab.setBackgroundDrawable(getResources().getDrawable(
+        actionBar.setBackgroundDrawable(getResources().getDrawable(
                 R.drawable.ab_solid_ocbc));
         /**
          * Setting dropdown items and item navigation listener for the actionbar
          */
-        ab.setListNavigationCallbacks(abDropdownAdapter, navigationListener);
+        actionBar.setListNavigationCallbacks(abDropdownAdapter, navigationListener);
+    }
+
+    private void hideActionBarDropDownList() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     private void initializeViewPager() {
@@ -236,10 +239,9 @@ public class MainActivity extends SherlockFragmentActivity implements
                 .toUpperCase();
         titleTv.setText(tabName);
 
-        MainActivity.AddTab(this, this.mTabHost,
-                this.mTabHost.newTabSpec(tabName).setIndicator(indicator),
-                (tabInfo = new TabInfo(tabName,
-                        LeastWaitingTimeListFragment.class, args)));
+        MainActivity.AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(
+                tabName).setIndicator(indicator), (tabInfo = new TabInfo(
+                tabName, LeastWaitingTimeListFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
         indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
@@ -247,20 +249,18 @@ public class MainActivity extends SherlockFragmentActivity implements
 
         tabName = this.getString(R.string.title_section_notifs).toUpperCase();
         titleTv.setText(tabName);
-        MainActivity.AddTab(this, this.mTabHost,
-                this.mTabHost.newTabSpec(tabName).setIndicator(indicator),
-                (tabInfo = new TabInfo(tabName, NotificationsFragment.class,
-                        args)));
+        MainActivity.AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(
+                tabName).setIndicator(indicator), (tabInfo = new TabInfo(
+                tabName, NotificationsFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
         indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
         titleTv = (TextView) indicator.findViewById(R.id.title);
         tabName = this.getString(R.string.title_section_appts).toUpperCase();
         titleTv.setText(tabName);
-        MainActivity.AddTab(this, this.mTabHost,
-                this.mTabHost.newTabSpec(tabName).setIndicator(indicator),
-                (tabInfo = new TabInfo(tabName, AppointmentsFragment.class,
-                        args)));
+        MainActivity.AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(
+                tabName).setIndicator(indicator), (tabInfo = new TabInfo(
+                tabName, AppointmentsFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
         // Default to first tab
         // this.onTabChanged("Tab1");
@@ -301,14 +301,26 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onTabReselected(ActionBar.Tab tab,
             android.support.v4.app.FragmentTransaction fragmentTransaction) {
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        int tabPosition = this.mTabHost.getCurrentTab();
+        Log.d(APP_TAG, "createIotionsmenu pos = " + tabPosition);
         getSupportMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
+        switch (tabPosition) {
+        case 0:
+            return true;
+        case 1:
+            return true;
+        case 2:
+            menu.add(0, R.id.menu_my_appts, 0, R.string.menu_my_appts);
+            return true;
+        default:
+            return true;
+        }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -318,9 +330,18 @@ public class MainActivity extends SherlockFragmentActivity implements
             return true;
         case R.id.menu_settings:
             return true;
+        case R.id.menu_my_appts:
+            startMyAppointmentsIntent();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startMyAppointmentsIntent() {
+        //Intent intent = new Intent(this, GetQrActivity.class);
+        //startActivity(intent);
+        Log.d(APP_TAG, "starting my appointments intent");
     }
 
     private void startGetQrIntent() {
@@ -458,9 +479,18 @@ public class MainActivity extends SherlockFragmentActivity implements
     public void onTabChanged(String arg0) {
         int pos = this.mTabHost.getCurrentTab();
         this.mViewPager.setCurrentItem(pos);
+        // change option menu when swiping between tabs
+        invalidateOptionsMenu();
+        // show dropdown list only for branches tab
+        Boolean isBranchesTab = pos == 0;
+        if (isBranchesTab)
+            showActionBarDropDownList();
+        else
+            hideActionBarDropDownList();
     }
 
     public void showToast(String string) {
-        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT)
+                .show();
     }
 }
