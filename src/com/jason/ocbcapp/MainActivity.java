@@ -467,10 +467,10 @@ public class MainActivity extends SherlockFragmentActivity implements
          * @see android.widget.TabHost.TabContentFactory#createTabContent(java.lang.String)
          */
         public View createTabContent(String tag) {
-            View v = new View(mContext);
-            v.setMinimumWidth(0);
-            v.setMinimumHeight(0);
-            return v;
+            View view = new View(mContext);
+            view.setMinimumWidth(0);
+            view.setMinimumHeight(0);
+            return view;
         }
 
     }
