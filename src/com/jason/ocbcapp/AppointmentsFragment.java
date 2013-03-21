@@ -47,7 +47,7 @@ public class AppointmentsFragment extends Fragment {
 
     private static final String APP_TAG = MainActivity.APP_TAG;
 
-    private enum Services {
+    public enum Services {
         ACCOUNT_OPENING, CREDIT_CARD, LOAN, OTHERS
     };
 
@@ -435,8 +435,18 @@ public class AppointmentsFragment extends Fragment {
             Log.d(APP_TAG, "finished post request task");
             Log.d(APP_TAG, "result: " + result);
             loadingDialog.dismiss();
+
+            int queueNumber = Integer.parseInt(result);
+            showQueueNumberToUser(queueNumber);
+            storeAppointmentInDatabase(queueNumber);
+        }
+
+        /**
+         * @param queueNumber
+         */
+        private void showQueueNumberToUser(int queueNumber) {
             successDialog.setMessage(getString(R.string.label_queue_text) + " "
-                    + result);
+                    + queueNumber);
             successDialog.show();
         }
     }
@@ -450,6 +460,20 @@ public class AppointmentsFragment extends Fragment {
         timeSpinner.setAdapter(new ArrayAdapter<String>(this.getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
                 availableTimeSlots));
+    }
+
+    public void storeAppointmentInDatabase(int queueNumber) {
+        Calendar chosenDate = this.chosenDate;
+        int branchId = getSelectedBranchId();
+        AppointmentsDataSource dataSource = new AppointmentsDataSource(
+                getActivity());
+        dataSource.open();
+        dataSource.createAppointment(chosenDate.getTimeInMillis(), branchId,
+                queueNumber);
+        dataSource.close();
+        Log.d(APP_TAG, "insert into data base date = "
+                + chosenDate.getTimeInMillis() + ", branchId = "
+                + branchId + ", queueNumber = " + queueNumber);
     }
 
     public void showBranchIsClosedDialog() {

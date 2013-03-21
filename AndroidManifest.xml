@@ -38,6 +38,10 @@
             android:name="com.jason.ocbcapp.GetQrActivity"
             android:label="@string/title_activity_get_qr" >
         </activity>
+        <activity
+            android:name="com.jason.ocbcapp.MyAppointmentsActivity"
+            android:label="@string/title_activity_my_appointments" >
+        </activity>
     </application>
 
 </manifest>

@@ -329,6 +329,12 @@ public class MainActivity extends SherlockFragmentActivity implements
             startGetQrIntent();
             return true;
         case R.id.menu_settings:
+            // for debug
+            AppointmentsDataSource ds = new AppointmentsDataSource(getApplicationContext());
+            ds.open();
+            ds.deleteAllAppointments();
+            Log.d(APP_TAG, "appointments deleted");
+            ds.close();
             return true;
         case R.id.menu_my_appts:
             startMyAppointmentsIntent();
@@ -339,9 +345,9 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     private void startMyAppointmentsIntent() {
-        //Intent intent = new Intent(this, GetQrActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, MyAppointmentsActivity.class);
         Log.d(APP_TAG, "starting my appointments intent");
+        startActivity(intent);
     }
 
     private void startGetQrIntent() {
