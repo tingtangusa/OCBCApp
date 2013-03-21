@@ -361,17 +361,13 @@ public class AppointmentsFragment extends Fragment {
                 JSONArray branchApptSlots = jObj.optJSONArray("branchApptSlot");
                 Log.d(APP_TAG, "branchApptSlots = "
                         + branchApptSlots.toString());
-                if (branchApptSlots.length() == 0) {
-                    showBranchIsClosedDialog();
-                } else {
-                    for (int i = 0; i < branchApptSlots.length(); i++) {
-                        JSONObject slot = branchApptSlots.optJSONObject(i);
-                        int numberOfPfc = slot.optInt("pfc", 0);
-                        int time = slot.optInt("time", 0);
-                        Boolean slotIsAvailable = numberOfPfc != 0;
-                        if (slotIsAvailable)
-                            availableStartingTimeSlots.add(time / 100);
-                    }
+                for (int i = 0; i < branchApptSlots.length(); i++) {
+                    JSONObject slot = branchApptSlots.optJSONObject(i);
+                    int numberOfPfc = slot.optInt("pfc", 0);
+                    int time = slot.optInt("time", 0);
+                    Boolean slotIsAvailable = numberOfPfc != 0;
+                    if (slotIsAvailable)
+                        availableStartingTimeSlots.add(time / 100);
                 }
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
