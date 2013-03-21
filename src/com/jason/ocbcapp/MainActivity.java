@@ -1,6 +1,5 @@
 package com.jason.ocbcapp;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import android.content.Context;
@@ -28,7 +27,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 // PullToRefreshList import
@@ -463,7 +461,6 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     public void showToast(String string) {
-        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT)
-                .show();
+        Toast.makeText(getApplicationContext(), string, Toast.LENGTH_SHORT).show();
     }
 }

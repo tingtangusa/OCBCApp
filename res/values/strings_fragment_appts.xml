@@ -44,5 +44,6 @@
     <string name="label_loan">Loan Application</string>
     <string name="label_others">Others</string>
     <string name="label_queue_text">Your queue number is</string>
+    <string name="label_branch_closed_on_day">The branch is closed on the selected day. Please select another day for your apppointment.</string>
 
 </resources>

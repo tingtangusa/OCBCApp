@@ -10,13 +10,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Scanner;
 import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -44,14 +47,16 @@ public class AppointmentsFragment extends Fragment {
 
     private static final String APP_TAG = MainActivity.APP_TAG;
 
-    private enum Services { ACCOUNT_OPENING, CREDIT_CARD, LOAN, OTHERS };
+    private enum Services {
+        ACCOUNT_OPENING, CREDIT_CARD, LOAN, OTHERS
+    };
 
     ArrayList<CharSequence> dateList;
     static ArrayAdapter<CharSequence> dateAdapter;
     static SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM, yyyy");
     static Calendar chosenDate = Calendar.getInstance();
 
-    Spinner branchesSpinner = null;
+    static Spinner branchesSpinner = null;
     Spinner dateSpinner = null;
     Spinner timeSpinner = null;
 
@@ -102,17 +107,19 @@ public class AppointmentsFragment extends Fragment {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        
-        builder.setMessage(R.string.label_queue_text).setTitle("Appointment Booked");
-        builder.setPositiveButton("Got it!", new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setMessage(R.string.label_queue_text).setTitle(
+                "Appointment Booked");
+        builder.setPositiveButton("Got it!",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
         successDialog = builder.create();
-        
+
         branchesSpinner = (Spinner) vi.findViewById(R.id.branchesSpinner);
 
         CheckBox accCheckBox = (CheckBox) vi.findViewById(R.id.accCheckBox);
@@ -128,6 +135,10 @@ public class AppointmentsFragment extends Fragment {
         checkboxes.add(othersCheckBox);
         selectedServices = new ArrayList<String>();
 
+        // init loading screen
+        loadingDialog = new Dialog(getActivity());
+        loadingDialog.setContentView(R.layout.dialog_loading_screen);
+
         // Setup submit button
         Button submitButton = (Button) vi.findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new OnClickListener() {
@@ -137,7 +148,7 @@ public class AppointmentsFragment extends Fragment {
                 // setup variables to send
                 String dateString = "" + getSelectedTimestamp();
                 String userToken = getTokenFromPrefs();
-                String branchId = "" + branchesSpinner.getSelectedItemPosition();
+                String branchId = "" + getSelectedBranchId();
                 JSONObject jobj = new JSONObject();
                 JSONArray jsonStates = new JSONArray();
                 for (int i = 0; i < checkboxes.size(); i++) {
@@ -154,15 +165,13 @@ public class AppointmentsFragment extends Fragment {
                     jobj.accumulate("tokenOfCustomer", userToken);
                     jobj.accumulate("serviceType", jsonStates);
                     Log.d(APP_TAG, "json object: " + jobj.toString());
-                    UploadRequestTask task = new UploadRequestTask();
+                    SumbitFormTask task = new SumbitFormTask();
                     String url = "http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Queue/addOnlineQueue";
                     task.execute(new Pair<String, JSONObject>(url, jobj));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 // show loading spinner
-                loadingDialog = new Dialog(getActivity());
-                loadingDialog.setContentView(R.layout.dialog_loading_screen);
                 loadingDialog.show();
             }
 
@@ -170,7 +179,8 @@ public class AppointmentsFragment extends Fragment {
              * Retrieves the userToken string from the phone's shared preference
              */
             private String getTokenFromPrefs() {
-                SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
+                SharedPreferences settings = getActivity()
+                        .getSharedPreferences(MainActivity.PREFS_NAME, 0);
                 String userToken = settings.getString("userToken", "");
                 Log.d(APP_TAG, userToken);
                 return userToken;
@@ -203,7 +213,8 @@ public class AppointmentsFragment extends Fragment {
         chosenDate.set(Calendar.SECOND, 0);
         chosenDate.set(Calendar.MILLISECOND, 0);
         Log.d(APP_TAG, "cal datetime: " + chosenDate.toString());
-        Log.d(APP_TAG, "cal getTimeInMillis datetime: " + chosenDate.getTimeInMillis());
+        Log.d(APP_TAG, "cal getTimeInMillis datetime: "
+                + chosenDate.getTimeInMillis());
         return chosenDate.getTimeInMillis();
     }
 
@@ -216,35 +227,163 @@ public class AppointmentsFragment extends Fragment {
         return apptView;
     }
 
-    public static class DatePickerFragment extends DialogFragment implements
+    /**
+     * @param year
+     * @param month
+     * @param day
+     */
+    private void changeDateShownInForm(Calendar chosenDate) {
+        dateAdapter.clear();
+        dateAdapter.add(df.format(chosenDate.getTime()));
+    }
+
+    private void getAvailableSlots(Calendar chosenDate) {
+        int id = getSelectedBranchId();
+        int year = chosenDate.get(Calendar.YEAR);
+        int month = chosenDate.get(Calendar.MONTH);
+        int dayOfMonth = chosenDate.get(Calendar.DATE);
+        String url = String
+                .format("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranchApptSlot/%d/%d/%d/%d",
+                        id, year, month, dayOfMonth);
+        String urls[] = { url };
+        loadingDialog.show();
+        GetAvailableTimeSlotsTask task = new GetAvailableTimeSlotsTask();
+        task.execute(urls);
+    }
+
+    /*
+     * Assumes that position of item in list = branch id.
+     */
+    private static int getSelectedBranchId() {
+        return branchesSpinner.getSelectedItemPosition();
+    }
+
+    @SuppressLint("ValidFragment")
+    public class DatePickerFragment extends DialogFragment implements
             DatePickerDialog.OnDateSetListener {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
+            final Calendar currentDate = Calendar.getInstance();
+            int year = currentDate.get(Calendar.YEAR);
+            int month = currentDate.get(Calendar.MONTH);
+            int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
+        /*
+         * Once user has set the date, we want to change the form's date to the
+         * chose date. Next, we should query the server for the time slots that
+         * are available.
+         */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            // Do something with the date chosen by the user
-
             chosenDate = new GregorianCalendar(year, month, day);
-
-            Log.d(APP_TAG, "Chosen date: " + chosenDate.getTime().toString());
-            dateAdapter.clear();
-            dateAdapter.add(df.format(chosenDate.getTime()));
-
+            changeDateShownInForm(chosenDate);
+            getAvailableSlots(chosenDate);
         }
     }
 
-    class UploadRequestTask extends AsyncTask<Pair<String, JSONObject>, String, String> {
+    class GetAvailableTimeSlotsTask extends AsyncTask<String, String, String> {
+
+        private int responseCode = 0;
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String responseString = null;
+            InputStream responseStream = null;
+            HttpURLConnection urlConnection = null;
+            try {
+                URL url = new URL(urls[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.addRequestProperty("Content-type",
+                        "application/json");
+                urlConnection.connect();
+
+                responseStream = new BufferedInputStream(urlConnection
+                        .getInputStream());
+                responseCode = urlConnection.getResponseCode();
+                Log.d(APP_TAG, "response code: " + responseCode);
+                responseString = readStream(responseStream);
+            } catch (Exception e) {
+                Log.e(APP_TAG, e.getMessage());
+            }
+            return responseString;
+        }
+
+        private String readStream(InputStream inputStream) {
+            StringBuilder buf = new StringBuilder();
+            Scanner sc = null;
+            try {
+
+                sc = new Scanner(inputStream);
+                while (sc.hasNext()) {
+                    buf.append(sc.next());
+                }
+
+            } catch (Exception e) {
+                Log.e(APP_TAG, e.getMessage());
+            }
+            return buf.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            // Extract waiting time from json object
+            loadingDialog.dismiss();
+            Log.d(APP_TAG, "finished get available timeslots task");
+            Log.d(APP_TAG, "result: " + result);
+            Boolean noResponse = responseCode == HttpURLConnection.HTTP_NO_CONTENT;
+            Boolean isSuccessful = responseCode == HttpURLConnection.HTTP_OK;
+            if (noResponse) {
+                showBranchIsClosedDialog();
+            } else if (isSuccessful) {
+                ArrayList<Integer> availableStartingTimeSlots = new ArrayList<Integer>();
+                extractStartingTimeSlotsFromJson(result,
+                        availableStartingTimeSlots);
+                showAvailableSlots(availableStartingTimeSlots);
+            }
+
+        }
+
+        /**
+         * @param result
+         * @param availableStartingTimeSlots
+         */
+        private void extractStartingTimeSlotsFromJson(String result,
+                ArrayList<Integer> availableStartingTimeSlots) {
+            try {
+                JSONObject jObj = new JSONObject(result);
+                JSONArray branchApptSlots = jObj.optJSONArray("branchApptSlot");
+                Log.d(APP_TAG, "branchApptSlots = "
+                        + branchApptSlots.toString());
+                if (branchApptSlots.length() == 0) {
+                    showBranchIsClosedDialog();
+                } else {
+                    for (int i = 0; i < branchApptSlots.length(); i++) {
+                        JSONObject slot = branchApptSlots.optJSONObject(i);
+                        int numberOfPfc = slot.optInt("pfc", 0);
+                        int time = slot.optInt("time", 0);
+                        Boolean slotIsAvailable = numberOfPfc != 0;
+                        if (slotIsAvailable)
+                            availableStartingTimeSlots.add(time / 100);
+                    }
+                }
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            Log.d(APP_TAG, "avail slots = "
+                    + availableStartingTimeSlots.toString());
+        }
+    }
+
+    class SumbitFormTask extends
+            AsyncTask<Pair<String, JSONObject>, String, String> {
 
         @Override
         protected String doInBackground(Pair<String, JSONObject>... pair) {
@@ -258,15 +397,18 @@ public class AppointmentsFragment extends Fragment {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 urlConnection.setRequestProperty("Accept", "application/json");
-                urlConnection.addRequestProperty("Content-type", "application/json");
+                urlConnection.addRequestProperty("Content-type",
+                        "application/json");
                 urlConnection.setRequestMethod("POST");
                 urlConnection.connect();
-                
+
                 writer = new OutputStreamWriter(urlConnection.getOutputStream());
                 writer.write(data.toString());
                 writer.close();
-                responseStream = new BufferedInputStream( urlConnection.getInputStream());
-                Log.d(APP_TAG, "response code: " + urlConnection.getResponseCode());
+                responseStream = new BufferedInputStream(urlConnection
+                        .getInputStream());
+                Log.d(APP_TAG, "response code: "
+                        + urlConnection.getResponseCode());
                 responseString = readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
@@ -297,9 +439,50 @@ public class AppointmentsFragment extends Fragment {
             Log.d(APP_TAG, "finished post request task");
             Log.d(APP_TAG, "result: " + result);
             loadingDialog.dismiss();
-            successDialog.setMessage(getString(R.string.label_queue_text) + " " + result);
+            successDialog.setMessage(getString(R.string.label_queue_text) + " "
+                    + result);
             successDialog.show();
         }
+    }
+
+    public void showAvailableSlots(ArrayList<Integer> availableStartingTimeSlots) {
+        ArrayList<String> availableTimeSlots = new ArrayList<String>();
+        HashMap<Integer, String> mapStartTimeToSlots = makeTimeSlotHashMap();
+        for (Integer slot : availableStartingTimeSlots) {
+            availableTimeSlots.add(mapStartTimeToSlots.get(slot));
+        }
+        timeSpinner.setAdapter(new ArrayAdapter<String>(this.getActivity(),
+                android.R.layout.simple_spinner_dropdown_item,
+                availableTimeSlots));
+    }
+
+    public void showBranchIsClosedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        Dialog branchClosedDialog = null;
+        builder.setMessage(R.string.label_branch_closed_on_day).setTitle(
+                "Branch Closed");
+        builder.setPositiveButton("Okay",
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        branchClosedDialog = builder.create();
+        branchClosedDialog.show();
+    }
+
+    private HashMap<Integer, String> makeTimeSlotHashMap() {
+        HashMap<Integer, String> timeSlotMap = new HashMap<Integer, String>();
+        int[] startingTimeSlots = getResources().getIntArray(
+                R.array.start_time_slots);
+        String[] timeSlots = getResources().getStringArray(R.array.time_slots);
+        for (int i = 0; i < startingTimeSlots.length; i++) {
+            timeSlotMap.put(startingTimeSlots[i], timeSlots[i]);
+        }
+        return timeSlotMap;
     }
 
 }
