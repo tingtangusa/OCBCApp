@@ -372,16 +372,10 @@ public class MainActivity extends SherlockFragmentActivity implements
             case 2:
                 return new AppointmentsFragment();
             }
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
-            return fragment;
         }
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
             return 3;
         }
 
