@@ -9,11 +9,6 @@
     <string name="label_submit">Submit</string>
 
     <string-array name="time_slots">
-        <item>2013</item>
-        <item>2014</item>
-        <item>2015</item>
-    </string-array>
-    <string-array name="time_slots">
         <item>0900am - 1000am</item>
         <item>1000am - 1100am</item>
         <item>1100am - 1200pm</item>
@@ -22,10 +17,27 @@
         <item>0200pm - 0300pm</item>
         <item>0300pm - 0400pm</item>
         <item>0400pm - 0500pm</item>
+        <item>0500pm - 0600pm</item>
         <item>0600pm - 0700pm</item>
         <item>0700pm - 0800pm</item>
         <item>0800pm - 0900pm</item>
     </string-array>
+
+    <integer-array name="start_time_slots">
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </integer-array>
+
 
     <string name="label_acc">Account Opening</string>
     <string name="label_cc">Credit Card Application</string>

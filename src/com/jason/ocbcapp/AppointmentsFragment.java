@@ -5,16 +5,18 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,14 +29,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Toast;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -45,18 +44,23 @@ public class AppointmentsFragment extends Fragment {
 
     private static final String APP_TAG = MainActivity.APP_TAG;
 
+    private enum Services { ACCOUNT_OPENING, CREDIT_CARD, LOAN, OTHERS };
+
     ArrayList<CharSequence> dateList;
     static ArrayAdapter<CharSequence> dateAdapter;
     static SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM, yyyy");
-    static Date chosenDate = new Date();
+    static Calendar chosenDate = Calendar.getInstance();
 
     Spinner branchesSpinner = null;
-    ArrayList<Integer> checkedStates = null;
+    Spinner dateSpinner = null;
+    Spinner timeSpinner = null;
+
+    ArrayList<String> selectedServices = null;
     ArrayList<CheckBox> checkboxes = null;
-    
+
     Dialog loadingDialog = null;
     AlertDialog successDialog = null;
-    
+
     public AppointmentsFragment() {
 
     }
@@ -67,8 +71,12 @@ public class AppointmentsFragment extends Fragment {
 
         View vi = getView();
         // Setup date spinner
-        Spinner dateSpinner = (Spinner) vi.findViewById(R.id.dateSpinner);
+        dateSpinner = (Spinner) vi.findViewById(R.id.dateSpinner);
+        timeSpinner = (Spinner) vi.findViewById(R.id.timeSpinner);
+
         dateList = new ArrayList<CharSequence>();
+
+        // set the picker's default date to currentDate
         Date currentDate = new Date();
         dateList.add(df.format(currentDate));
         dateAdapter = new ArrayAdapter<CharSequence>(vi.getContext(),
@@ -97,7 +105,7 @@ public class AppointmentsFragment extends Fragment {
         
         builder.setMessage(R.string.label_queue_text).setTitle("Appointment Booked");
         builder.setPositiveButton("Got it!", new DialogInterface.OnClickListener() {
-            
+
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -118,7 +126,7 @@ public class AppointmentsFragment extends Fragment {
         checkboxes.add(ccCheckBox);
         checkboxes.add(loanCheckBox);
         checkboxes.add(othersCheckBox);
-        checkedStates = new ArrayList<Integer>();
+        selectedServices = new ArrayList<String>();
 
         // Setup submit button
         Button submitButton = (Button) vi.findViewById(R.id.submitButton);
@@ -127,15 +135,17 @@ public class AppointmentsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // setup variables to send
-                String dateString = "2013-03-14T03:45:53.447Z";
+                String dateString = "" + getSelectedTimestamp();
                 String userToken = getTokenFromPrefs();
                 String branchId = "" + branchesSpinner.getSelectedItemPosition();
                 JSONObject jobj = new JSONObject();
                 JSONArray jsonStates = new JSONArray();
                 for (int i = 0; i < checkboxes.size(); i++) {
                     if (checkboxes.get(i).isChecked()) {
-                        checkedStates.add(i - 1);
-                        jsonStates.put(i - 1);
+                        Services service = Services.values()[i];
+                        String serviceStr = getServiceString(service);
+                        selectedServices.add(serviceStr);
+                        jsonStates.put(serviceStr);
                     }
                 }
                 try {
@@ -168,6 +178,35 @@ public class AppointmentsFragment extends Fragment {
         });
     }
 
+    protected String getServiceString(Services service) {
+        switch (service) {
+        case ACCOUNT_OPENING:
+            return "account_opening";
+        case CREDIT_CARD:
+            return "credit_card";
+        case LOAN:
+            return "loan";
+        case OTHERS:
+            return "others";
+        default:
+            return "ERROR!";
+        }
+    }
+
+    protected long getSelectedTimestamp() {
+        int[] timeSlots = getResources().getIntArray(R.array.start_time_slots);
+        int selectedTime = timeSlots[timeSpinner.getSelectedItemPosition()];
+        // set hour of day and leave mins, sec and ms blank
+        chosenDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+        chosenDate.set(Calendar.HOUR_OF_DAY, selectedTime);
+        chosenDate.set(Calendar.MINUTE, 0);
+        chosenDate.set(Calendar.SECOND, 0);
+        chosenDate.set(Calendar.MILLISECOND, 0);
+        Log.d(APP_TAG, "cal datetime: " + chosenDate.toString());
+        Log.d(APP_TAG, "cal getTimeInMillis datetime: " + chosenDate.getTimeInMillis());
+        return chosenDate.getTimeInMillis();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -196,21 +235,12 @@ public class AppointmentsFragment extends Fragment {
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
 
-            SimpleDateFormat parseDF = new SimpleDateFormat("dd MM yyyy");
-            try {
-                chosenDate = parseDF.parse(String.format("%d %d %d", day,
-                        month + 1, year));
-                // Toast.makeText(getActivity(), "date = " +
-                // chosenDate.toString() + "\n" + String.format("%d %d %d", day,
-                // month + 1, year), Toast.LENGTH_LONG).show();
-                dateAdapter.clear();
-                dateAdapter.add(df.format(chosenDate));
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG)
-                        .show();
-                e.printStackTrace();
-            }
+            chosenDate = new GregorianCalendar(year, month, day);
+
+            Log.d(APP_TAG, "Chosen date: " + chosenDate.getTime().toString());
+            dateAdapter.clear();
+            dateAdapter.add(df.format(chosenDate.getTime()));
+
         }
     }
 
@@ -236,8 +266,7 @@ public class AppointmentsFragment extends Fragment {
                 writer.write(data.toString());
                 writer.close();
                 responseStream = new BufferedInputStream( urlConnection.getInputStream());
-                Log.d(APP_TAG,
-                        "response code: " + urlConnection.getResponseCode());
+                Log.d(APP_TAG, "response code: " + urlConnection.getResponseCode());
                 responseString = readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
