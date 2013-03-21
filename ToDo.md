@@ -2,9 +2,8 @@ OCBCApp UI
 ---
 
 - Add sort by nearest branch, sort by least waiting time
-- Add notifs
-- Make appt form send details to server
-  - Able to communicate with server but date is not set.
-- Register phone with server
+- Show available time slots in form
 - QR code generator
+  - QR generated. Have to put token and services selected in QR code
 - Location Aware to detect nearest branches
+- Testing
