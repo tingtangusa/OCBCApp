@@ -16,7 +16,7 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
     private PullToRefreshListView mPullRefreshListView;
 
     private ArrayList<String> branchesList;
-    private BranchesAdapter branchesAdapter;
+    private BranchAdapter branchesAdapter;
 
     public LeastWaitingTimeListFragment() {
     }
@@ -25,7 +25,7 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
         branchesList = new ArrayList<String>();
         branchesList.addAll(Arrays.asList(getResources().getStringArray(
                 R.array.branches)));
-        branchesAdapter = new BranchesAdapter(getActivity(), branchesList);
+        branchesAdapter = new BranchAdapter(getActivity(), branchesList);
     }
 
     @Override
