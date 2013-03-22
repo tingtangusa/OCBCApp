@@ -25,6 +25,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -453,7 +454,7 @@ public class AppointmentsFragment extends Fragment {
 
     public void showAvailableSlots(ArrayList<Integer> availableStartingTimeSlots) {
         ArrayList<String> availableTimeSlots = new ArrayList<String>();
-        HashMap<Integer, String> mapStartTimeToSlots = makeTimeSlotHashMap();
+        SparseArray<String> mapStartTimeToSlots = makeTimeSlotsMap();
         for (Integer slot : availableStartingTimeSlots) {
             availableTimeSlots.add(mapStartTimeToSlots.get(slot));
         }
@@ -494,10 +495,9 @@ public class AppointmentsFragment extends Fragment {
         branchClosedDialog.show();
     }
 
-    private HashMap<Integer, String> makeTimeSlotHashMap() {
-        HashMap<Integer, String> timeSlotMap = new HashMap<Integer, String>();
-        int[] startingTimeSlots = getResources().getIntArray(
-                R.array.start_time_slots);
+    public SparseArray<String> makeTimeSlotsMap() {
+        SparseArray<String> timeSlotMap = new SparseArray<String>();
+        int[] startingTimeSlots = getResources().getIntArray(R.array.start_time_slots);
         String[] timeSlots = getResources().getStringArray(R.array.time_slots);
         for (int i = 0; i < startingTimeSlots.length; i++) {
             timeSlotMap.put(startingTimeSlots[i], timeSlots[i]);
