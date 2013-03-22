@@ -7,3 +7,5 @@ OCBCApp UI
   - QR generated. Have to put token and services selected in QR code
 - Location Aware to detect nearest branches
 - Testing
+- Clear the appointment when it is over.
+- Show better error messages
