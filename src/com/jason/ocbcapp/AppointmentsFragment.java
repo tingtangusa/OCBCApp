@@ -41,6 +41,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 
@@ -454,7 +455,7 @@ public class AppointmentsFragment extends Fragment {
 
     public void showAvailableSlots(ArrayList<Integer> availableStartingTimeSlots) {
         ArrayList<String> availableTimeSlots = new ArrayList<String>();
-        SparseArray<String> mapStartTimeToSlots = makeTimeSlotsMap();
+        SparseArray<String> mapStartTimeToSlots = makeTimeSlotsMap(this.getActivity());
         for (Integer slot : availableStartingTimeSlots) {
             availableTimeSlots.add(mapStartTimeToSlots.get(slot));
         }
@@ -495,10 +496,10 @@ public class AppointmentsFragment extends Fragment {
         branchClosedDialog.show();
     }
 
-    public SparseArray<String> makeTimeSlotsMap() {
+    public static SparseArray<String> makeTimeSlotsMap(Context context) {
         SparseArray<String> timeSlotMap = new SparseArray<String>();
-        int[] startingTimeSlots = getResources().getIntArray(R.array.start_time_slots);
-        String[] timeSlots = getResources().getStringArray(R.array.time_slots);
+        int[] startingTimeSlots = context.getResources().getIntArray(R.array.start_time_slots);
+        String[] timeSlots = context.getResources().getStringArray(R.array.time_slots);
         for (int i = 0; i < startingTimeSlots.length; i++) {
             timeSlotMap.put(startingTimeSlots[i], timeSlots[i]);
         }
