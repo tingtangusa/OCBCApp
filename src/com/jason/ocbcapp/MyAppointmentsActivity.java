@@ -30,7 +30,7 @@ public class MyAppointmentsActivity extends ListActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         initializeAppointmentsList();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, appointmentBranches);
+        AppointmentAdapter adapter = new AppointmentAdapter(this, appointments);
         this.setListAdapter(adapter);
     }
 
