@@ -9,3 +9,4 @@ OCBCApp UI
 - Testing
 - Clear the appointment when it is over.
 - Show better error messages
+- Show distance to branch
