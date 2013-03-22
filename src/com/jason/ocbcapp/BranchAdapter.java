@@ -25,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 // A base adapter with modified elements to put buttons in list elements
-public class BranchesAdapter extends BaseAdapter {
+public class BranchAdapter extends BaseAdapter {
 
     private static final String APP_TAG = MainActivity.APP_TAG;
 
@@ -34,7 +34,7 @@ public class BranchesAdapter extends BaseAdapter {
     private int[] waitingTimes;
     private static LayoutInflater inflater = null;
 
-    public BranchesAdapter(Activity activity, ArrayList<String> data) {
+    public BranchAdapter(Activity activity, ArrayList<String> data) {
         this.activity = activity;
         this.data = data;
         waitingTimes = new int[data.size()];
