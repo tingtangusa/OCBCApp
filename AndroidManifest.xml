@@ -35,8 +35,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jason.ocbcapp.GetQrActivity"
-            android:label="@string/title_activity_get_qr" >
+            android:name="com.jason.ocbcapp.ShowQrActivity"
+            android:label="@string/title_activity_get_qr"
+            android:parentActivityName="com.jason.ocbcapp.MakeWalkInApptActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jason.ocbcapp.MakeWalkInApptActivity" />
         </activity>
         <activity
             android:name="com.jason.ocbcapp.MyAppointmentsActivity"
