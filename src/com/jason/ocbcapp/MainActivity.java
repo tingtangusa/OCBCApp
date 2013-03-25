@@ -326,15 +326,9 @@ public class MainActivity extends SherlockFragmentActivity implements
         // Handle item selection
         switch (item.getItemId()) {
         case R.id.menu_get_qr:
-            startGetQrIntent();
+            startMakeWalkInApptActivity();
             return true;
         case R.id.menu_settings:
-            // for debug
-            AppointmentsDataSource ds = new AppointmentsDataSource(getApplicationContext());
-            ds.open();
-            ds.deleteAllAppointments();
-            Log.d(APP_TAG, "appointments deleted");
-            ds.close();
             return true;
         case R.id.menu_my_appts:
             startMyAppointmentsIntent();
@@ -350,8 +344,8 @@ public class MainActivity extends SherlockFragmentActivity implements
         startActivity(intent);
     }
 
-    private void startGetQrIntent() {
-        Intent intent = new Intent(this, GetQrActivity.class);
+    private void startMakeWalkInApptActivity() {
+        Intent intent = new Intent(this, MakeWalkInApptActivity.class);
         startActivity(intent);
     }
 
