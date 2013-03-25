@@ -198,7 +198,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
         titleTv = (TextView) indicator.findViewById(R.id.title);
 
-        tabName = this.getString(R.string.title_section_notifs).toUpperCase();
+        tabName = this.getString(R.string.title_section_nearest_branches).toUpperCase();
         titleTv.setText(tabName);
         MainActivity.AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(
                 tabName).setIndicator(indicator), (tabInfo = new TabInfo(
@@ -338,7 +338,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             case 0:
                 return getString(R.string.title_section_branches).toUpperCase();
             case 1:
-                return getString(R.string.title_section_notifs).toUpperCase();
+                return getString(R.string.title_section_nearest_branches).toUpperCase();
             case 2:
                 return getString(R.string.title_section_appts).toUpperCase();
             }

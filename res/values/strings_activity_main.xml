@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_section_branches">Branches</string>
-    <string name="title_section_notifs">Notifs</string>
+    <string name="title_section_nearest_branches">Nearest Branches</string>
     <string name="title_section_appts">Appts</string>
     <string name="title_list_nearest_branches">Nearest To You</string>
     <string name="title_list_least_wait">Least Waiting Time</string>
