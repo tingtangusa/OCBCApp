@@ -440,7 +440,6 @@ public class AppointmentsFragment extends Fragment {
 
             int queueNumber = Integer.parseInt(result);
             showQueueNumberToUser(queueNumber);
-            storeAppointmentInDatabase(queueNumber);
         }
 
         /**
@@ -462,20 +461,6 @@ public class AppointmentsFragment extends Fragment {
         timeSpinner.setAdapter(new ArrayAdapter<String>(this.getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
                 availableTimeSlots));
-    }
-
-    public void storeAppointmentInDatabase(int queueNumber) {
-        Calendar chosenDate = this.chosenDate;
-        int branchId = getSelectedBranchId();
-        AppointmentsDataSource dataSource = new AppointmentsDataSource(
-                getActivity());
-        dataSource.open();
-        dataSource.createAppointment(chosenDate.getTimeInMillis(), branchId,
-                queueNumber);
-        dataSource.close();
-        Log.d(APP_TAG, "insert into data base date = "
-                + chosenDate.getTimeInMillis() + ", branchId = "
-                + branchId + ", queueNumber = " + queueNumber);
     }
 
     public void showBranchIsClosedDialog() {
