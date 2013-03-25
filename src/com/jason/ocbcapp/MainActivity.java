@@ -97,24 +97,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         initializeTabHost(savedInstanceState);
 
         initializeViewPager();
-
-        // initialize actionbar dropdown list
-        initializeActionBarDropDownList();
-
-        showActionBarDropDownList();
-    }
-
-    /**
-     * 
-     */
-    private void initializeActionBarDropDownList() {
-        abDropdownList = new LinkedList<String>();
-        abDropdownList.add(getResources().getString(
-                R.string.title_list_least_wait));
-        abDropdownList.add(getResources().getString(
-                R.string.title_list_nearest_branches));
-        abDropdownAdapter = new ArrayAdapter<String>(mMainActivity,
-                android.R.layout.simple_spinner_dropdown_item, abDropdownList);
     }
 
     private void initializeUserToken() {
@@ -123,37 +105,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         else {
             Log.wtf(APP_TAG, "can't init token without setting up");
         }
-    }
-
-    private void showActionBarDropDownList() {
-        /** Enabling dropdown list navigation for the action bar */
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        // Not showing title
-        // ab.setDisplayShowTitleEnabled(false);
-        /** Defining Navigation listener */
-        OnNavigationListener navigationListener = new OnNavigationListener() {
-
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition,
-                    long itemId) {
-                Log.d(APP_TAG, "selected " + abDropdownList.get(itemPosition));
-                return false;
-            }
-        };
-
-        actionBar.setBackgroundDrawable(getResources().getDrawable(
-                R.drawable.ab_solid_ocbc));
-        /**
-         * Setting dropdown items and item navigation listener for the actionbar
-         */
-        actionBar.setListNavigationCallbacks(abDropdownAdapter, navigationListener);
-    }
-
-    private void hideActionBarDropDownList() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     private void initializeViewPager() {
@@ -450,12 +401,6 @@ public class MainActivity extends SherlockFragmentActivity implements
         this.mViewPager.setCurrentItem(pos);
         // change option menu when swiping between tabs
         invalidateOptionsMenu();
-        // show dropdown list only for branches tab
-        Boolean isBranchesTab = pos == 0;
-        if (isBranchesTab)
-            showActionBarDropDownList();
-        else
-            hideActionBarDropDownList();
     }
 
     public void showToast(String string) {
