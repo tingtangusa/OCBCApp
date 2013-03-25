@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/menu_get_qr"
+        android:id="@+id/menu_make_walk_in_appt"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_get_qr"/>
+        android:title="@string/menu_make_walk_in_appt"/>
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"

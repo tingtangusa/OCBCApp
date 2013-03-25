@@ -325,7 +325,7 @@ public class MainActivity extends SherlockFragmentActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.menu_get_qr:
+        case R.id.menu_make_walk_in_appt:
             startMakeWalkInApptActivity();
             return true;
         case R.id.menu_settings:
