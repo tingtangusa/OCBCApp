@@ -125,6 +125,6 @@
         android:minWidth="70dp"
         android:text="@string/label_submit"
         android:textAllCaps="true"
-        android:textSize="15dp" />
+        android:textSize="15sp" />
 
 </LinearLayout>
