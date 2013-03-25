@@ -42,6 +42,14 @@
             android:name="com.jason.ocbcapp.MyAppointmentsActivity"
             android:label="@string/title_activity_my_appointments" >
         </activity>
+        <activity
+            android:name="com.jason.ocbcapp.MakeWalkInApptActivity"
+            android:label="@string/title_activity_make_walk_in_appt"
+            android:parentActivityName="com.jason.ocbcapp.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jason.ocbcapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
