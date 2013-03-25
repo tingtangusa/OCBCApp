@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/title_make_appt"
+        android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -54,7 +55,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -77,9 +77,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:entries="@array/time_slots" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <TextView
@@ -94,25 +92,29 @@
         android:id="@+id/accCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_acc" />
+        android:text="@string/label_acc"
+        android:textAllCaps="true" />
 
     <CheckBox
         android:id="@+id/ccCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_cc" />
+        android:text="@string/label_cc"
+        android:textAllCaps="true" />
 
     <CheckBox
         android:id="@+id/loanCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_loan" />
+        android:text="@string/label_loan"
+        android:textAllCaps="true" />
 
     <CheckBox
         android:id="@+id/othersCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_others" />
+        android:text="@string/label_others"
+        android:textAllCaps="true" />
 
     <Button
         android:id="@+id/submitButton"
