@@ -13,14 +13,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class NotificationsFragment extends PullToRefreshListFragment {
+public class NearestBranchesFragment extends PullToRefreshListFragment {
 
     private LinkedList<String> notifsList;
     private ArrayAdapter<String> notifsAdapter;
 
     private PullToRefreshListView notifsListView;
 
-    public NotificationsFragment() {
+    public NearestBranchesFragment() {
 
     }
 

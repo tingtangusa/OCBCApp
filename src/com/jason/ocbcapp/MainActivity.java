@@ -251,7 +251,7 @@ public class MainActivity extends SherlockFragmentActivity implements
         titleTv.setText(tabName);
         MainActivity.AddTab(this, this.mTabHost, this.mTabHost.newTabSpec(
                 tabName).setIndicator(indicator), (tabInfo = new TabInfo(
-                tabName, NotificationsFragment.class, args)));
+                tabName, NearestBranchesFragment.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
 
         indicator = getLayoutInflater().inflate(R.layout.tab_indicator, null);
@@ -368,7 +368,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             case 0:
                 return new LeastWaitingTimeListFragment();
             case 1:
-                return new NotificationsFragment();
+                return new NearestBranchesFragment();
             case 2:
                 return new AppointmentsFragment();
             default:
