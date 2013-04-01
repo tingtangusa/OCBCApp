@@ -15,7 +15,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 public class LeastWaitingTimeListFragment extends ListFragment {
 
     static final String APP_TAG = MainActivity.APP_TAG;
-    private PullToRefreshListView mPullRefreshListView;
 
     private ArrayList<String> branchesList;
     private BranchAdapter branchesAdapter;
