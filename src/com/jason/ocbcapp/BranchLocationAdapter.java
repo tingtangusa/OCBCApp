@@ -57,6 +57,7 @@ public class BranchLocationAdapter extends BranchAdapter {
         holder.pb.setVisibility(View.INVISIBLE);
 
         String branchName = branchesWithDistance.get(position).first;
+        branchName = shortenBranchName(branchName);
         holder.name.setText(branchName);
 
         long distance = Math.round(branchesWithDistance.get(position).second) / 1000;

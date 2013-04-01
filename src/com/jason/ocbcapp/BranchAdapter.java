@@ -112,7 +112,9 @@ public class BranchAdapter extends BaseAdapter {
 
         holder.pb.setVisibility(View.INVISIBLE);
 
-        holder.name.setText(data.get(position));
+        String branchName = data.get(position);
+        branchName = shortenBranchName(branchName);
+        holder.name.setText(branchName);
 
         // The android adapter reuses views, we cannot simply set the text to
         // buttons. The references are reused and we may end up setting the text
@@ -132,6 +134,20 @@ public class BranchAdapter extends BaseAdapter {
         holder.btn.setTag(position);
         holder.btn.setOnClickListener(btnClickListener);
         return convertView;
+    }
+
+    /**
+     * Shortens branch name if it is longer than MAX_STRING_LENGTH.
+     * @param branchName
+     * @return The shortened branch name
+     */
+    protected String shortenBranchName(String branchName) {
+        int MAX_STRING_LENGTH = 15;
+        Boolean isLongName = branchName.length() > MAX_STRING_LENGTH;
+        if (isLongName) {
+            return branchName.substring(0, 15) + "...";
+        }
+        return branchName;
     }
 
     class RequestTask extends
