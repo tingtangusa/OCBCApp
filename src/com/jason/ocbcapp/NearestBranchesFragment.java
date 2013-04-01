@@ -8,22 +8,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -37,13 +33,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 /**
  * @author jason List the 15 nearest branches.
+ * Once the list is pulled, the nearest branches are refreshed.
  */
 public class NearestBranchesFragment extends PullToRefreshListFragment {
 
     private ArrayList<Branch> branches;
 
     private ArrayList<Branch> nearestBranchesList;
-    private ArrayAdapter<String> nearestBranchesAdapter;
+    private BranchLocationAdapter nearestBranchesAdapter;
 
     private LocationManager manager;
 
@@ -97,14 +94,14 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
     }
 
     /**
-     * 
+     * Initialize the location manager, requesting network based location.
      */
     private void setupLocationManager() {
         manager = (LocationManager) getActivity().getSystemService(
                 Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             /**
-             * Received new location, refresh branches list
+             * Received new location, set current location and refresh branches list
              */
             public void onLocationChanged(Location location) {
                 Log.d(APP_TAG, "location changed");
@@ -178,12 +175,12 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
     }
 
     /**
-     * Returns the distance between the two coordinates in kilometers.
+     * Returns the distance between the two coordinates in meters.
      * @param lat1
      * @param lng1
      * @param lat2
      * @param lng2
-     * @return distance in kilometers
+     * @return distance in meters
      */
     private static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
         double earthRadius = 3958.75;
@@ -203,11 +200,17 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
 
     private void setupNearestBranchesAdapter() {
         Log.d(APP_TAG, "Branches after sort = " + branches);
-        ArrayList<String> names = new ArrayList<String>();
+        // initialize our list to pass to the adapter. The adapter
+        // needs the names and the distances of the branches to show
+        // the information
+        ArrayList<Pair<String, Double>> branchesWithDistance = new ArrayList<Pair<String, Double>>();
         for (Branch branch : nearestBranchesList) {
-            names.add(branch.getName());
+            String name = branch.getName();
+            Double distance = branch.getDistFromUser();
+            Pair<String, Double> pair = new Pair<String, Double>(name, distance);
+            branchesWithDistance.add(pair);
         }
-        nearestBranchesAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, names);
+        nearestBranchesAdapter = new BranchLocationAdapter(getActivity(), branchesWithDistance);
         this.setListAdapter(nearestBranchesAdapter);
     }
 
