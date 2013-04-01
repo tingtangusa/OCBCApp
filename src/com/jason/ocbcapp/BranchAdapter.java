@@ -30,9 +30,9 @@ public class BranchAdapter extends BaseAdapter {
     private static final String APP_TAG = MainActivity.APP_TAG;
 
     private Activity activity;
-    private ArrayList<String> data;
-    private int[] waitingTimes;
-    private static LayoutInflater inflater = null;
+    protected ArrayList<String> data;
+    protected int[] waitingTimes;
+    protected static LayoutInflater inflater = null;
 
     public BranchAdapter(Activity activity, ArrayList<String> data) {
         this.activity = activity;
@@ -58,6 +58,35 @@ public class BranchAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
+    protected OnClickListener btnClickListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Button btnClicked = (Button) v;
+            View view = (View) v.getParent();
+            ProgressBar pb = (ProgressBar) view.findViewById(R.id.progressBar);
+            int position = (Integer) btnClicked.getTag();
+            Log.d(APP_TAG, "executing task");
+            RequestTask task = new RequestTask();
+            // we shall send three args to the RequestTask.
+            // 1) String containing the url to call
+            // 2) The button that the user clicked
+            // 3) The progress bar associated to the button
+            // This way, we do not need to make another findViewById call and we
+            // can
+            // simply reuse the objects.
+            task.execute(new Triple<String, Button, ProgressBar>(
+                    "http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranch/"
+                            + position, btnClicked, pb));
+            // clear text, show loading spinner
+            btnClicked.setText("");
+            pb.setVisibility(View.VISIBLE);
+            Log.d(APP_TAG, "Visibility: " + pb.getVisibility());
+            pb.bringToFront();
+
+        }
+    };
 
     // We use the ViewHolder pattern here to optimize the performance.
     // This is to prevent extra calls to findViewById.
@@ -101,29 +130,7 @@ public class BranchAdapter extends BaseAdapter {
         // associate the position of the button in the List with the button itself.
         // we need this later when we are storing the retrieved waiting time.
         holder.btn.setTag(position);
-        holder.btn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button btnClicked = (Button) v;
-                View view = (View) v.getParent();
-                ProgressBar pb = (ProgressBar) view
-                        .findViewById(R.id.progressBar);
-                Log.d(APP_TAG, "executing task");
-                RequestTask task = new RequestTask();
-                // we shall send three args to the RequestTask.
-                // 1) String containing the url to call
-                // 2) The button that the user clicked
-                // 3) The progress bar associated to the button
-                // This way, we do not need to make another findViewById call and we can
-                // simply reuse the objects.
-                task.execute(new Triple<String, Button, ProgressBar>(
-                        "http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranch/"
-                                + position, btnClicked, pb));
-                pb.setVisibility(View.VISIBLE);
-                Log.d(APP_TAG, "Visibility: " + pb.getVisibility());
-                pb.bringToFront();
-            }
-        });
+        holder.btn.setOnClickListener(btnClickListener);
         return convertView;
     }
 
