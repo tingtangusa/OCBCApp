@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.jason.ocbcapp.Appointment;
 
@@ -185,7 +186,8 @@ public class MyAppointmentsActivity extends ListActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+            } else {
+                showUnableToConnectToast();
             }
         }
 
@@ -223,5 +225,14 @@ public class MyAppointmentsActivity extends ListActivity {
                         goBackToMainActivity();
                     }
                 });
+    }
+
+    /**
+     * 
+     */
+    private void showUnableToConnectToast() {
+        Toast t = new Toast(getApplicationContext());
+        t.setText("Unable to connect to server");
+        t.show();
     }
 }
