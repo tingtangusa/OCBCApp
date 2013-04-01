@@ -228,6 +228,6 @@ public class MyAppointmentsActivity extends ListActivity {
     }
 
     private void showUnableToConnectToast() {
-        CrossCutting.showToastMessage(getApplicationContext(), "Unable to connect to server");
+        CrossCutting.showUnableToConnectMessage(getApplicationContext());
     }
 }

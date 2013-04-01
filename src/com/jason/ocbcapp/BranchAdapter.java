@@ -10,6 +10,8 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jason.ocbcapp.MyAppointmentsActivity.GetAppointmentsTask;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -165,6 +167,7 @@ public class BranchAdapter extends BaseAdapter {
 
         private Button btnClicked = null;
         private ProgressBar pb = null;
+        private int responseCode = 0;
 
         @Override
         protected String doInBackground(
@@ -183,6 +186,7 @@ public class BranchAdapter extends BaseAdapter {
                         urlConnection.getInputStream());
                 Log.d(APP_TAG,
                         "response code: " + urlConnection.getResponseCode());
+                responseCode = urlConnection.getResponseCode();
                 responseString = readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
@@ -212,15 +216,20 @@ public class BranchAdapter extends BaseAdapter {
             super.onPostExecute(result);
             // Extract waiting time from json object
             Log.d(APP_TAG, "finished request task, showing waiting time");
-            try {
-                JSONObject jObj = new JSONObject(result);
-                String waitingTime = jObj.getString("waitingTime");
-                int position = (Integer) btnClicked.getTag();
-                waitingTimes[position] = Integer.parseInt(waitingTime);
-                btnClicked.setText(waitingTime + "mins");
-                pb.setVisibility(View.INVISIBLE);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            Boolean isSucessful = responseCode == HttpURLConnection.HTTP_OK;
+            if (isSucessful) {
+                try {
+                    JSONObject jObj = new JSONObject(result);
+                    String waitingTime = jObj.getString("waitingTime");
+                    int position = (Integer) btnClicked.getTag();
+                    waitingTimes[position] = Integer.parseInt(waitingTime);
+                    btnClicked.setText(waitingTime + "mins");
+                    pb.setVisibility(View.INVISIBLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                showUnableToConnectMessage();
             }
         }
     }
@@ -241,5 +250,9 @@ public class BranchAdapter extends BaseAdapter {
             this.second = second;
             this.third = third;
         }
+    }
+
+    public void showUnableToConnectMessage() {
+        CrossCutting.showUnableToConnectMessage(activity);
     }
 }

@@ -3,14 +3,8 @@ package com.jason.ocbcapp;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import android.app.ListFragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.ListView;
-import com.handmark.pulltorefresh.extras.listfragment.PullToRefreshListFragment;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import android.support.v4.app.ListFragment;
 
 public class LeastWaitingTimeListFragment extends ListFragment {
 
