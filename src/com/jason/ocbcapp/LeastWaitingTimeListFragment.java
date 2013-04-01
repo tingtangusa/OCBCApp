@@ -2,6 +2,8 @@ package com.jason.ocbcapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import android.app.ListFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -10,7 +12,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
+public class LeastWaitingTimeListFragment extends ListFragment {
 
     static final String APP_TAG = MainActivity.APP_TAG;
     private PullToRefreshListView mPullRefreshListView;
@@ -20,7 +22,7 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
 
     public LeastWaitingTimeListFragment() {
     }
-    
+
     private void initBranchesList() {
         branchesList = new ArrayList<String>();
         branchesList.addAll(Arrays.asList(getResources().getStringArray(
@@ -33,17 +35,6 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
         super.onActivityCreated(savedInstanceState);
 
         initBranchesList();
-        mPullRefreshListView  = this
-            .getPullToRefreshListView();
-        mPullRefreshListView
-                .setOnRefreshListener(new OnRefreshListener<ListView>() {
-                    @Override
-                    public void onRefresh(
-                            PullToRefreshBase<ListView> refreshView) {
-                        GetLeastWaitingTimeTask task = new GetLeastWaitingTimeTask();
-                        task.execute();
-                    }
-                });
 
         this.getListView().setTextFilterEnabled(true);
 
@@ -52,30 +43,4 @@ public class LeastWaitingTimeListFragment extends PullToRefreshListFragment {
         this.setEmptyText(getString(R.string.hello_world));
 
     }
-
-
-    private class GetLeastWaitingTimeTask extends
-            AsyncTask<Void, Void, String[]> {
-
-        @Override
-        protected String[] doInBackground(Void... arg0) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            return getResources().getStringArray(R.array.branches);
-        }
-
-        @Override
-        protected void onPostExecute(String[] result) {
-            branchesList.add(0, "Added after refresh...");
-            branchesAdapter.notifyDataSetChanged();
-
-            // Call onRefreshComplete when the list has been refreshed.
-            mPullRefreshListView.onRefreshComplete();
-
-            super.onPostExecute(result);
-        }
-    }
-
 }
