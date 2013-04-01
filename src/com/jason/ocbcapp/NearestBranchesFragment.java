@@ -146,7 +146,7 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
         nearestBranchesList = new ArrayList<Branch>(branches);
         calculateDistanceForAllBranches();
         Collections.sort(nearestBranchesList, DIST_ORDER);
-        nearestBranchesList = take(10, nearestBranchesList);
+        nearestBranchesList = take(NUM_BRANCHES, nearestBranchesList);
     }
 
     private <E> ArrayList<E> take(int n, ArrayList<E> list) {
