@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/waitingTimeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="17dp"
+        android:layout_marginTop="15dp"
+        android:width="80dp" />
+
+    <TextView
+        android:id="@+id/branchName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/waitingTimeBtn"
+        android:layout_alignBottom="@+id/waitingTimeBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="34dp"
+        android:text="Aljunied"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/waitingTimeBtn"
+        android:layout_alignTop="@+id/waitingTimeBtn"
+        android:layout_marginLeft="15dp"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/branchDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/waitingTimeBtn"
+        android:layout_alignLeft="@+id/branchName"
+        android:text="18 km"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>
