@@ -2,10 +2,7 @@ package com.jason.ocbcapp;
 
 import java.util.ArrayList;
 
-import com.jason.ocbcapp.BranchAdapter.ViewHolder;
-
 import android.app.Activity;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
