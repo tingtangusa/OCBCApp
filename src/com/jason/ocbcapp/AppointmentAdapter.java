@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import android.app.Activity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,10 +48,6 @@ public class AppointmentAdapter extends BaseAdapter {
         return position;
     }
 
-    // We use the ViewHolder pattern here to optimize the performance.
-    // This is to prevent extra calls to findViewById.
-    // See http://sriramramani.wordpress.com/2012/07/25/infamous-viewholder-pattern/
-    // and http://www.vogella.com/articles/AndroidListView/article.html#adapterperformance
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
@@ -74,22 +72,41 @@ public class AppointmentAdapter extends BaseAdapter {
         String branchName = getBranchNameFromId(branchId);
         holder.branchName.setText(branchName);
 
-        String timeslot = getTimeSlotFromTimeStamp(timestamp);
-        holder.timeSlot.setText(timeslot);
+        String dateTime = getDateFromTimeStamp(timestamp) + " "+ getTimeSlotFromTimeStamp(timestamp);
+        holder.timeSlot.setText(dateTime);
 
         String queueNumberStr = "" + queueNumber;
         holder.queueNumber.setText(queueNumberStr);
-        
+
         return convertView;
     }
 
+    private String getDateFromTimeStamp(long timestamp) {
+        Calendar cal = convertTimeStampToCalendar(timestamp);
+        int date = cal.get(Calendar.DATE);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        return date + "-" + month + "-" + year;
+    }
+
     private String getTimeSlotFromTimeStamp(long timestamp) {
-        Date date = new Date(timestamp);
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(date);
+        Calendar cal = convertTimeStampToCalendar(timestamp);
         int hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+        Log.d(APP_TAG, "timestamp = " + timestamp + ", Hour " + hourOfDay);
         SparseArray<String> timeSlotMap = AppointmentsFragment.makeTimeSlotsMap(this.activity);
         return timeSlotMap.get(hourOfDay);
+    }
+
+    /**
+     * @param timestamp
+     * @return
+     */
+    private Calendar convertTimeStampToCalendar(long timestamp) {
+        Log.d(APP_TAG, "before convert = " + timestamp);
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        cal.setTimeInMillis(timestamp);
+        Log.d(APP_TAG, "after convert = " + cal.getTimeInMillis());
+        return cal;
     }
 
     private String getBranchNameFromId(int id) {
