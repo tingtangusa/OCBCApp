@@ -2,6 +2,8 @@ package com.jason.ocbcapp;
 
 import java.util.ArrayList;
 
+import com.jason.ocbcapp.BranchAdapter.ViewHolder;
+
 import android.app.Activity;
 import android.util.Log;
 import android.util.Pair;
@@ -41,14 +43,7 @@ public class BranchLocationAdapter extends BranchAdapter {
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.branches_location_row, null);
-
-            holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(R.id.branchName);
-            holder.distance = (TextView) convertView.findViewById(R.id.branchDistance);
-            holder.btn = (Button) convertView.findViewById(R.id.waitingTimeBtn);
-            holder.pb = (ProgressBar) convertView
-                    .findViewById(R.id.progressBar);
-
+            holder = initializeViewHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -72,6 +67,16 @@ public class BranchLocationAdapter extends BranchAdapter {
         holder.btn.setTag(position);
         holder.btn.setOnClickListener(btnClickListener);
         return convertView;
+    }
+
+    private ViewHolder initializeViewHolder(View convertView) {
+        ViewHolder holder = new ViewHolder();
+        holder.name = (TextView) convertView.findViewById(R.id.branchName);
+        holder.btn = (Button) convertView.findViewById(R.id.waitingTimeBtn);
+        holder.pb = (ProgressBar) convertView
+                .findViewById(R.id.progressBar); 
+        holder.distance = (TextView) convertView.findViewById(R.id.branchDistance);
+        return holder;
     }
 
     static class ViewHolder {

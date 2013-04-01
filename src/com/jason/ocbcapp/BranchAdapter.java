@@ -99,11 +99,7 @@ public class BranchAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.branches_row, null);
 
-            holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(R.id.branchName);
-            holder.btn = (Button) convertView.findViewById(R.id.waitingTimeBtn);
-            holder.pb = (ProgressBar) convertView
-                    .findViewById(R.id.progressBar);
+            holder = initializeViewHolder(convertView);
 
             convertView.setTag(holder);
         } else {
@@ -134,6 +130,20 @@ public class BranchAdapter extends BaseAdapter {
         holder.btn.setTag(position);
         holder.btn.setOnClickListener(btnClickListener);
         return convertView;
+    }
+
+    /**
+     * @param convertView
+     * @return The initialized view holder that contains the view's layouts
+     */
+    private ViewHolder initializeViewHolder(View convertView) {
+        ViewHolder holder;
+        holder = new ViewHolder();
+        holder.name = (TextView) convertView.findViewById(R.id.branchName);
+        holder.btn = (Button) convertView.findViewById(R.id.waitingTimeBtn);
+        holder.pb = (ProgressBar) convertView
+                .findViewById(R.id.progressBar);
+        return holder;
     }
 
     /**
