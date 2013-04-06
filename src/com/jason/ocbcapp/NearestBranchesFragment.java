@@ -237,7 +237,7 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
 
                 responseStream = new BufferedInputStream( urlConnection.getInputStream());
                 Log.d(APP_TAG, "response code: " + urlConnection.getResponseCode());
-                responseString = readStream(responseStream);
+                responseString = CrossCutting.readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
                 return "";
@@ -286,23 +286,6 @@ public class NearestBranchesFragment extends PullToRefreshListFragment {
             }
             Branch branch = new Branch(id, name, waitingTime, latitude, longitude);
             return branch;
-        }
-
-        private String readStream(InputStream inputStream) {
-            // TODO Auto-generated method stub
-            StringBuilder buf = new StringBuilder();
-            Scanner sc = null;
-            try {
-
-                sc = new Scanner(inputStream);
-                while (sc.hasNext()) {
-                    buf.append(sc.next());
-                }
-
-            } catch (Exception e) {
-                Log.e(APP_TAG, e.getMessage());
-            }
-            return buf.toString();
         }
 
     }

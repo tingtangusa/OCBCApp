@@ -140,27 +140,11 @@ public class MyAppointmentsActivity extends ListActivity {
                         .getInputStream());
                 responseCode = urlConnection.getResponseCode();
                 Log.d(APP_TAG, "response code: " + responseCode);
-                responseString = readStream(responseStream);
+                responseString = CrossCutting.readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
             }
             return responseString;
-        }
-
-        private String readStream(InputStream inputStream) {
-            StringBuilder buf = new StringBuilder();
-            Scanner sc = null;
-            try {
-
-                sc = new Scanner(inputStream);
-                while (sc.hasNext()) {
-                    buf.append(sc.next());
-                }
-
-            } catch (Exception e) {
-                Log.e(APP_TAG, e.getMessage());
-            }
-            return buf.toString();
         }
 
         @Override

@@ -187,28 +187,11 @@ public class BranchAdapter extends BaseAdapter {
                 Log.d(APP_TAG,
                         "response code: " + urlConnection.getResponseCode());
                 responseCode = urlConnection.getResponseCode();
-                responseString = readStream(responseStream);
+                responseString = CrossCutting.readStream(responseStream);
             } catch (Exception e) {
                 Log.e(APP_TAG, e.getMessage());
             }
             return responseString;
-        }
-
-        private String readStream(InputStream inputStream) {
-            // TODO Auto-generated method stub
-            StringBuilder buf = new StringBuilder();
-            Scanner sc = null;
-            try {
-
-                sc = new Scanner(inputStream);
-                while (sc.hasNext()) {
-                    buf.append(sc.next());
-                }
-
-            } catch (Exception e) {
-                Log.e(APP_TAG, e.getMessage());
-            }
-            return buf.toString();
         }
 
         @Override
