@@ -235,7 +235,7 @@ public class AppointmentsFragment extends Fragment {
         int dayOfMonth = chosenDate.get(Calendar.DATE);
         String url = String
                 .format("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranchApptSlot/%d/%d/%d/%d",
-                        id, year, month, dayOfMonth);
+                        id, year, month + 1, dayOfMonth);
         Log.d(APP_TAG, "date url = " + url);
         String urls[] = { url };
         loadingDialog.show();
@@ -254,7 +254,9 @@ public class AppointmentsFragment extends Fragment {
     public class DatePickerFragment extends DialogFragment implements
             DatePickerDialog.OnDateSetListener {
 
-        boolean fired = false;
+        // To check for double firing
+        // See http://stackoverflow.com/questions/11383592/android-android-4-1-emulator-invoking-ondateset-twice-from-datepicker-dialog
+        boolean dateSet = false;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -276,9 +278,12 @@ public class AppointmentsFragment extends Fragment {
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            chosenDate = new GregorianCalendar(year, month, day);
-            changeDateShownInForm(chosenDate);
-            getAvailableSlots(chosenDate);
+            if (!dateSet) {
+                chosenDate = new GregorianCalendar(year, month, day);
+                changeDateShownInForm(chosenDate);
+                getAvailableSlots(chosenDate);
+                dateSet = true;
+            }
         }
     }
 
