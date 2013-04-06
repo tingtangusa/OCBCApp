@@ -198,7 +198,7 @@ public class AppointmentsFragment extends Fragment {
         int[] timeSlots = getResources().getIntArray(R.array.start_time_slots);
         int selectedTime = timeSlots[timeSpinner.getSelectedItemPosition()];
         // set hour of day and leave mins, sec and ms blank
-        chosenDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+        chosenDate.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         chosenDate.set(Calendar.HOUR_OF_DAY, selectedTime);
         chosenDate.set(Calendar.MINUTE, 0);
         chosenDate.set(Calendar.SECOND, 0);

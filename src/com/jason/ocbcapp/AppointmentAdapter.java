@@ -103,7 +103,7 @@ public class AppointmentAdapter extends BaseAdapter {
      */
     private Calendar convertTimeStampToCalendar(long timestamp) {
         Log.d(APP_TAG, "before convert = " + timestamp);
-        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT+8"));
         cal.setTimeInMillis(timestamp);
         Log.d(APP_TAG, "after convert = " + cal.getTimeInMillis());
         return cal;
