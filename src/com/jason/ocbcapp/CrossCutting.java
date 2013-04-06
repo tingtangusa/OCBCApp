@@ -29,15 +29,14 @@ public class CrossCutting {
     private static final String HAS_SETUP = "hasSetup";
     private static final String USER_TOKEN = "userToken";
     private static final String APP_TAG = MainActivity.APP_TAG;
-    public static final String APP_PREFS_NAME = "OCBCPrefsFile";
+    public static final String APP_PREFS_FILE_NAME = "OCBCPrefsFile";
 
     public static void showUnableToConnectMessage(Context context) {
         showToastMessage(context, "Unable to connect to server");
     }
 
     public static void showToastMessage(Context context, String msg) {
-        Toast t = new Toast(context);
-        t.setText(msg);
+        Toast t = Toast.makeText(context, msg, Toast.LENGTH_LONG);
         t.show();
     }
 
@@ -60,7 +59,7 @@ public class CrossCutting {
 
     public static boolean getBooleanPreference(Context context,
             String prefName, Boolean defValue) {
-        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_NAME,
+        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_FILE_NAME,
                 0);
         Boolean result = prefs.getBoolean(prefName, defValue);
         return result;
@@ -68,21 +67,21 @@ public class CrossCutting {
 
     public static String getStringPreference(Context context,
             String prefName, String defValue) {
-        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_NAME,
+        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_FILE_NAME,
                 0);
         String result = prefs.getString(prefName, defValue);
         return result;
     }
 
     public static void setBooleanPreference(Context context, String prefName, Boolean value) {
-        SharedPreferences prefs = context.getSharedPreferences(prefName, 0);
+        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_FILE_NAME, 0);
         Editor editor = prefs.edit();
         editor.putBoolean(prefName, value);
         editor.apply();
     }
 
     public static void setStringPreference(Context context, String prefName, String value) {
-        SharedPreferences prefs = context.getSharedPreferences(prefName, 0);
+        SharedPreferences prefs = context.getSharedPreferences(APP_PREFS_FILE_NAME, 0);
         Editor editor = prefs.edit();
         editor.putString(prefName, value);
         editor.apply();
