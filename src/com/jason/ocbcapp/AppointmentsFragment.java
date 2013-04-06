@@ -236,6 +236,7 @@ public class AppointmentsFragment extends Fragment {
         String url = String
                 .format("http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Branch/GetBranchApptSlot/%d/%d/%d/%d",
                         id, year, month, dayOfMonth);
+        Log.d(APP_TAG, "date url = " + url);
         String urls[] = { url };
         loadingDialog.show();
         GetAvailableTimeSlotsTask task = new GetAvailableTimeSlotsTask();
@@ -253,13 +254,16 @@ public class AppointmentsFragment extends Fragment {
     public class DatePickerFragment extends DialogFragment implements
             DatePickerDialog.OnDateSetListener {
 
+        boolean fired = false;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            final Calendar currentDate = Calendar.getInstance();
-            int year = currentDate.get(Calendar.YEAR);
-            int month = currentDate.get(Calendar.MONTH);
-            int day = currentDate.get(Calendar.DAY_OF_MONTH);
+            // Use the chosen date as the default date in the picker
+            // Chosen date defaults to current date if the date is not yet chosen
+            // See {@link Calendar.getInstance()}
+            int year = chosenDate.get(Calendar.YEAR);
+            int month = chosenDate.get(Calendar.MONTH);
+            int day = chosenDate.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day);

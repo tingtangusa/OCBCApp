@@ -206,7 +206,7 @@ public class SetupActivity extends Activity {
      */
     public class SetupTask extends AsyncTask<Pair<String, JSONObject>, Void, String> {
 
-        private Boolean hasError = false;
+        private boolean hasError = false;
 
         @Override
         protected String doInBackground(Pair<String, JSONObject>... pair) {
