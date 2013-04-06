@@ -7,6 +7,20 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author Jason
+ * Contains cross cutting concerns aka code that is used by many
+ * classes.
+ * 
+ * The code here MUST be guaranteed to be functional,
+ * it should not cause another part of the program to change.
+ *
+ * Cross cutting concerns:
+ * - String readStream(InputStream)
+ * - void showToastMessage(Context,String)
+ * - void showUnableToConnectMessage(Context)
+ */
 public class CrossCutting {
 
     private static final String APP_TAG = MainActivity.APP_TAG;
