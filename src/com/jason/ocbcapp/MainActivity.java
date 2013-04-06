@@ -77,15 +77,20 @@ public class MainActivity extends SherlockFragmentActivity implements
         setContentView(R.layout.activity_main);
 
         // start SetupActivity if user has not setup the app
-        hasSetup = CrossCutting.getHasSetupFromPreferences(getApplicationContext());
-        Log.i("OCBCApp", "hasSetup = " + hasSetup);
         startSetupActivity();
-        initializeUserToken();
-        Log.i("OCBCApp", "user token = " + userToken);
 
         initializeTabHost(savedInstanceState);
 
         initializeViewPager();
+    }
+
+    private void debugPreferences() {
+        String userToken = CrossCutting.getUserTokenFromPreferences(getApplicationContext());
+        Boolean hasSetup = CrossCutting.getHasSetupFromPreferences(getApplicationContext());
+        CrossCutting.showToastMessage(getApplication(), String.format("setup = %b, token = %s", hasSetup, userToken));
+        if (userToken == null) {
+            CrossCutting.showToastMessage(getApplicationContext(), "OOPS!");
+        }
     }
 
     private void initializeUserToken() {
@@ -120,6 +125,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     // starts the setup activity and waits for the user's token
     private void startSetupActivity() {
+        hasSetup = CrossCutting.getHasSetupFromPreferences(getApplicationContext());
         if (!hasSetup) {
             Log.i("OCBCApp", "Starting setup");
             Intent intent = new Intent(this, SetupActivity.class);
@@ -136,6 +142,7 @@ public class MainActivity extends SherlockFragmentActivity implements
             // make sure the request was successful
             if (resultCode == RESULT_OK) {
                 storeToken(data.getStringExtra("userToken"));
+                initializeUserToken();
             }
         }
     }
