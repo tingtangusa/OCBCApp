@@ -149,7 +149,7 @@ public class AppointmentsFragment extends Fragment {
             public void onClick(View v) {
                 // setup variables to send
                 String dateString = "" + getSelectedTimestamp();
-                String userToken = getTokenFromPrefs();
+                String userToken = CrossCutting.getUserTokenFromPreferences(getActivity());
                 String branchId = "" + getSelectedBranchId();
                 JSONObject jobj = new JSONObject();
                 JSONArray jsonStates = new JSONArray();
@@ -175,17 +175,6 @@ public class AppointmentsFragment extends Fragment {
                 }
                 // show loading spinner
                 loadingDialog.show();
-            }
-
-            /*
-             * Retrieves the userToken string from the phone's shared preference
-             */
-            private String getTokenFromPrefs() {
-                SharedPreferences settings = getActivity()
-                        .getSharedPreferences(MainActivity.PREFS_NAME, 0);
-                String userToken = settings.getString("userToken", "");
-                Log.d(APP_TAG, userToken);
-                return userToken;
             }
         });
     }

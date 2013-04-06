@@ -6,8 +6,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,23 +13,16 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.Pair;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
 import com.jason.ocbcapp.Appointment;
 
 public class MyAppointmentsActivity extends ListActivity {
@@ -59,7 +50,7 @@ public class MyAppointmentsActivity extends ListActivity {
 
     private void initializeAppointmentsList() {
         String url = "http://cutebalrog.com:8080/OCBC-QM-Server-web/webresources/Customer/getAppointment";
-        String userToken = getUserTokenFromPreferences();
+        String userToken = CrossCutting.getUserTokenFromPreferences(getApplicationContext());
         JSONObject jobj = new JSONObject();
         try {
             jobj.accumulate("tokenOfCustomer", userToken);
@@ -68,14 +59,6 @@ public class MyAppointmentsActivity extends ListActivity {
         }
         GetAppointmentsTask task = new GetAppointmentsTask();
         task.execute(new Pair(url, jobj));
-    }
-
-    private String getUserTokenFromPreferences() {
-        // TODO Auto-generated method stub
-        SharedPreferences settings = getSharedPreferences(
-                MainActivity.PREFS_NAME, 0);
-        String userToken = settings.getString("userToken", "");
-        return userToken;
     }
 
     @Override

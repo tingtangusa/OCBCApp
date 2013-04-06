@@ -12,7 +12,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
@@ -49,7 +48,7 @@ public class ShowQrActivity extends Activity {
 
         QRCodeWriter qrWriter = new QRCodeWriter();
         BitMatrix qrBitMatrix = null;
-        String userToken = getUserTokenFromPreferences();
+        String userToken = CrossCutting.getUserTokenFromPreferences(getApplicationContext());
         ArrayList<String> servicesSelected = getServicesSelected();
         // make json object from user token and the services the user
         // selected.
@@ -98,14 +97,6 @@ public class ShowQrActivity extends Activity {
         ArrayList<String> servicesSelected = getIntent()
                 .getStringArrayListExtra("servicesSelected");
         return servicesSelected;
-    }
-
-    private String getUserTokenFromPreferences() {
-        // TODO Auto-generated method stub
-        SharedPreferences settings = getSharedPreferences(
-                MainActivity.PREFS_NAME, 0);
-        String userToken = settings.getString("userToken", "");
-        return userToken;
     }
 
     /**

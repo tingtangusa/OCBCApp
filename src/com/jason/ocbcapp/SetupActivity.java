@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,7 +15,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,13 +22,10 @@ import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -211,6 +205,9 @@ public class SetupActivity extends Activity {
      * the user.
      */
     public class SetupTask extends AsyncTask<Pair<String, JSONObject>, Void, String> {
+
+        private Boolean hasError = false;
+
         @Override
         protected String doInBackground(Pair<String, JSONObject>... pair) {
             // init our variables for the http connection
@@ -238,9 +235,9 @@ public class SetupActivity extends Activity {
                 Log.d(APP_TAG, "response code: " + urlConnection.getResponseCode());
                 responseString = CrossCutting.readStream(responseStream);
             } catch (Exception e) {
+                Log.e(APP_TAG, "ERROR!");
                 Log.e(APP_TAG, e.getMessage());
-                showProgress(false);
-                showTryAgainDialog();
+                hasError = true;
                 return "";
             }
             return responseString;
@@ -248,12 +245,11 @@ public class SetupActivity extends Activity {
 
         @Override
         protected void onPostExecute(String token) {
+            Log.d(APP_TAG, "Finished sending info, got user token: " + token);
             task = null;
             showProgress(false);
 
-            if (TextUtils.isEmpty(token)) {
-                // token is null, something is terribly wrong
-                Log.w(APP_TAG, "server gave a empty token");
+            if (TextUtils.isEmpty(token) || hasError) {
                 showTryAgainDialog();
             } else {
                 Log.d(APP_TAG, "got response for setup: " + token);

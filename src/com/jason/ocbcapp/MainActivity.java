@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,10 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
@@ -24,7 +20,6 @@ import android.widget.Toast;
 
 // ActionBarSherlock imports
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -58,7 +53,6 @@ public class MainActivity extends SherlockFragmentActivity implements
     private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
 
     // Name of the preference SharedPreferences that we are using for the app
-    public static final String PREFS_NAME = "OCBCPrefsFile";
 
     MainActivity mMainActivity = this;
 
@@ -77,18 +71,13 @@ public class MainActivity extends SherlockFragmentActivity implements
     // state to store whether user has already done the setting up
     private boolean hasSetup = false;
 
-    SharedPreferences settings = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Restore preferences
-        settings = getSharedPreferences(PREFS_NAME, 0);
-
         // start SetupActivity if user has not setup the app
-        hasSetup = settings.getBoolean("hasSetup", false);
+        hasSetup = CrossCutting.getHasSetupFromPreferences(getApplicationContext());
         Log.i("OCBCApp", "hasSetup = " + hasSetup);
         startSetupActivity();
         initializeUserToken();
@@ -101,7 +90,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 
     private void initializeUserToken() {
         if (hasSetup)
-            userToken = settings.getString("userToken", "");
+            userToken = CrossCutting.getUserTokenFromPreferences(getApplicationContext());
         else {
             Log.wtf(APP_TAG, "can't init token without setting up");
         }
@@ -166,11 +155,8 @@ public class MainActivity extends SherlockFragmentActivity implements
     }
 
     private void commitTokenToPrefs(String userToken) {
-        settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("hasSetup", true);
-        editor.putString("userToken", userToken);
-        editor.commit();
+        CrossCutting.setHasSetupPreference(getApplicationContext(), true);
+        CrossCutting.setUserTokenPreference(getApplicationContext(), userToken);
         Log.d(APP_TAG, "after commiting, hasSetup: " + hasSetup);
     }
 
