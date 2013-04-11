@@ -252,12 +252,9 @@ public class SetupActivity extends Activity {
             if (TextUtils.isEmpty(token) || hasError) {
                 showTryAgainDialog();
             } else {
-                Log.d(APP_TAG, "got response for setup: " + token);
+                Log.d(APP_TAG, "success! got response for setup: " + token);
 
-                Intent result = new Intent();
-                result.putExtra("userToken", token);
-                setResult(Activity.RESULT_OK, result);
-                finish();
+                showSuccessDialogReturnToMain(token);
             }
         }
 
@@ -282,5 +279,33 @@ public class SetupActivity extends Activity {
         });
         AlertDialog tryAgainDialog = builder.create();
         tryAgainDialog.show();
+    }
+
+    public void showSuccessDialogReturnToMain(final String token) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Welcome to OCBC Waiting Time App.").setTitle("Successfully Setup");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                returnToMainWithToken(token);
+            }
+        });
+        AlertDialog successDialog = builder.create();
+        successDialog.show();
+    }
+
+    /**
+     * Brings the user to the MainActivity. It also returns
+     * the userToken that we got from the server.
+     * @param token that SetupTask got from server
+     */
+    private void returnToMainWithToken(String token) {
+        Intent result = new Intent();
+        result.putExtra("userToken", token);
+        setResult(Activity.RESULT_OK, result);
+        finish();
     }
 }
