@@ -55,6 +55,7 @@
                 android:background="@drawable/ab_transparent_ocbc"
                 android:ems="10"
                 android:hint="@string/prompt_full_name"
+                android:contentDescription="@string/prompt_full_name"
                 android:inputType="textPersonName"
                 android:paddingTop="10dp"
                 android:textColorLink="@color/pressed_ocbc"
@@ -68,6 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:entries="@array/id_types"
+                android:contentDescription="@string/desc_id_type"
                 android:paddingTop="10dp" />
 
             <EditText
@@ -88,6 +90,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/ab_transparent_ocbc"
                 android:hint="@string/prompt_mobile"
+                android:contentDescription="@string/prompt_mobile"
                 android:inputType="phone"
                 android:maxLines="1"
                 android:paddingTop="10dp"

@@ -18,6 +18,7 @@
     <string name="title_activity_setup">Setup</string>
     <string name="prompt_full_name">Full Name</string>
     <string name="prompt_id">ID (e.g S1234567A)</string>
+    <string name="desc_id_type">ID Type</string>
     <string-array name="id_types">
         <item>NRIC</item>
         <item>FIN</item>
